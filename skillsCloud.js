@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
         text: "Localization",
         weight: 3
     }, {
-        text: "CoreData",
+        text: "Core Data",
         weight: 4
     }, {
         text: "CloudKit",
@@ -81,7 +81,7 @@ jQuery(document).ready(function($) {
         text: "Auto Layout",
         weight: 4
     }, {
-        text: "CoreAnimation",
+        text: "Core Animation",
         weight: 4
     }, {
         text: "CocoaPods",
