@@ -90,6 +90,9 @@ jQuery(document).ready(function($) {
         text: "Dependency Injection",
         weight: 4
     }, {
+        text: "Analytics",
+        weight: 8
+    }, {
         text: "Custom View",
         weight: 5
 }];
