@@ -6,12 +6,12 @@
         <link rel="canonical" href="https://roger.ml/posts/first-post"/>
         <meta name="twitter:url" content="https://roger.ml/posts/first-post"/>
         <meta name="og:url" content="https://roger.ml/posts/first-post"/>
-        <title>My first post | Roger Oba</title>
-        <meta name="twitter:title" content="My first post | Roger Oba"/>
-        <meta name="og:title" content="My first post | Roger Oba"/>
-        <meta name="description" content="A description of my first post."/>
-        <meta name="twitter:description" content="A description of my first post."/>
-        <meta name="og:description" content="A description of my first post."/>
+        <title>Welcome to the new website! | Roger Oba</title>
+        <meta name="twitter:title" content="Welcome to the new website! | Roger Oba"/>
+        <meta name="og:title" content="Welcome to the new website! | Roger Oba"/>
+        <meta name="description" content="First post in roger.ml new blogging website"/>
+        <meta name="twitter:description" content="First post in roger.ml new blogging website"/>
+        <meta name="og:description" content="First post in roger.ml new blogging website"/>
         <meta name="twitter:card" content="summary"/>
         <link rel="stylesheet" href="/styles.css" type="text/css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -26,14 +26,29 @@
         </header>
         <div class="wrapper">
             <article>
-                <div class="content"><h1>My first post</h1><p>My first post's text.</p></div>
+                <div class="content"><h1>Welcome to the new website!</h1><p>This is the first post of this newly revamped website. I'm finally migrating off of Medium. Hooray! 🎉</p><p>Here I'll test a code snippet in Swift:</p><pre><code>infix operator ??=
+
+extension Swift.Optional {
+    /// This is the Optional Value Setter operator. It assigns a value to the receiving subject, only if
+    /// the receiver is `nil`.
+    /// When the receiver is not `nil`, the value on the right hand side won't be accessed or computed (as
+    /// it's an `@autoclosure`). If the receiver already has `.some` value, no value will be assigned to it,
+    /// thus `willSet` and `didSet` won't be called.
+    ///
+    /// - SeeAlso: the rejected proposal of this feature in Swift Evolution: https://github.com/apple/swift-evolution/blob/master/proposals/0024-optional-value-setter.md
+    public static func ??=(lhs: inout Self&lt;Wrapped&gt;, rhs: @autoclosure () -&gt; Wrapped) {
+        guard case .none = lhs else { return }
+        lhs = rhs()
+    }
+}
+</code></pre></div>
                 <span>Tagged with: </span>
                 <ul class="tag-list">
                     <li>
-                        <a href="/tags/first">first</a>
+                        <a href="/tags/meta">meta</a>
                     </li>
                     <li>
-                        <a href="/tags/article">article</a>
+                        <a href="/tags/blog">blog</a>
                     </li>
                 </ul>
             </article>

@@ -1,1 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>RogerMl</title><description>A description of RogerMl</description><link>https://your-website-url.com</link><language>en</language><lastBuildDate>Sun, 28 Feb 2021 12:01:54 -0300</lastBuildDate><pubDate>Sun, 28 Feb 2021 12:01:54 -0300</pubDate><ttl>250</ttl><atom:link href="https://your-website-url.com/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://your-website-url.com/posts/first-post</guid><title>My first post</title><description>A description of my first post.</description><link>https://your-website-url.com/posts/first-post</link><pubDate>Sun, 28 Feb 2021 12:00:00 -0300</pubDate><content:encoded><![CDATA[<h1>My first post</h1><p>My first post's text.</p>]]></content:encoded></item></channel></rss>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Roger Oba</title><description>Lead Mobile Engineer</description><link>https://roger.ml</link><language>en</language><lastBuildDate>Sun, 28 Feb 2021 16:42:37 -0300</lastBuildDate><pubDate>Sun, 28 Feb 2021 16:42:37 -0300</pubDate><ttl>250</ttl><atom:link href="https://roger.ml/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://roger.ml/posts/first-post</guid><title>Welcome to the new website!</title><description>First post in roger.ml new blogging website</description><link>https://roger.ml/posts/first-post</link><pubDate>Sun, 28 Feb 2021 12:00:00 -0300</pubDate><content:encoded><![CDATA[<h1>Welcome to the new website!</h1><p>This is the first post of this newly revamped website. I'm finally migrating off of Medium. Hooray! 🎉</p><p>Here I'll test a code snippet in Swift:</p><pre><code>infix operator ??=
+
+extension Swift.Optional {
+    /// This is the Optional Value Setter operator. It assigns a value to the receiving subject, only if
+    /// the receiver is `nil`.
+    /// When the receiver is not `nil`, the value on the right hand side won't be accessed or computed (as
+    /// it's an `@autoclosure`). If the receiver already has `.some` value, no value will be assigned to it,
+    /// thus `willSet` and `didSet` won't be called.
+    ///
+    /// - SeeAlso: the rejected proposal of this feature in Swift Evolution: https://github.com/apple/swift-evolution/blob/master/proposals/0024-optional-value-setter.md
+    public static func ??=(lhs: inout Self&lt;Wrapped&gt;, rhs: @autoclosure () -&gt; Wrapped) {
+        guard case .none = lhs else { return }
+        lhs = rhs()
+    }
+}
+</code></pre>]]></content:encoded></item></channel></rss>
