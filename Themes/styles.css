@@ -144,6 +144,65 @@ footer {
     line-height: 1.5em;
 }
 
+/* Swift Syntax Highlighting  */
+
+pre {
+    margin-bottom: 1.5em;
+    background-color: #1a1a1a;
+    padding: 16px 0;
+    border-radius: 16px;
+}
+
+pre code {
+    font-family: monospace;
+    display: block;
+    padding: 0 20px;
+    color: #a9bcbc;
+    line-height: 1.4em;
+    font-size: 0.95em;
+    overflow-x: auto;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+}
+
+pre code .keyword {
+    color: #D33682;
+}
+
+pre code .type {
+    color: #6C71C4;
+}
+
+pre code .call {
+    color: #348fe5;
+}
+
+pre code .property {
+    color: #2AA198;
+}
+
+pre code .number {
+    color: #db6f57;
+}
+
+pre code .string {
+    color: #CB4B16;
+}
+
+pre code .comment {
+    color: #6F8892;
+}
+
+pre code .dotAccess {
+    color: #859900;
+}
+
+pre code .preprocessing {
+    color: #b68a00;
+}
+
+/* Dark Mode */
+
 @media (prefers-color-scheme: dark) {
     header .site-name {
         color: #ddd;
@@ -159,6 +218,8 @@ footer {
         color: #8a8a8a;
     }
 }
+
+/* Responsive Devices */
 
 @media(max-width: 600px) {
     .wrapper {
