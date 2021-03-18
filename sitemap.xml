@@ -4,48 +4,48 @@
         <loc>https://roger.ml/About</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/Contact</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/posts</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/posts/first-post</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/about</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/contact</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/about</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/contact</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-17</lastmod>
+        <lastmod>2021-03-18</lastmod>
     </url>
 </urlset>
