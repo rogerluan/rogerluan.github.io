@@ -1,3 +1,315 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Roger Oba</title><description>roger.ml hosts blog posts about miscellaneous topics, but mainly Swift programming, engineering, habits, and maybe a little bit of filosophy.</description><link>https://roger.ml</link><language>en</language><lastBuildDate>Thu, 25 Mar 2021 07:03:27 +0000</lastBuildDate><pubDate>Thu, 25 Mar 2021 07:03:27 +0000</pubDate><ttl>250</ttl><atom:link href="https://roger.ml/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://roger.ml/posts/xcode-version</guid><title>Automate Xcode version standardization across your team</title><description>Everyone in your team should be using the same dependencies versions. But is it possible to standardize the Xcode version too?</description><link>https://roger.ml/posts/xcode-version</link><pubDate>Thu, 25 Mar 2021 03:37:00 +0000</pubDate><content:encoded><![CDATA[<h1>Automating Xcode version standardization across your team</h1><img src="https://roger.ml/images/posts/xcode-version/dependencies.png" alt="Dependencies"/><p>At some point during your research on software development methodologies, you might stumble upon the <a href="https://12factor.net/">The Twelve-Factor App</a> methodology. For those who don't know, this is a methodology for building high-quality software-as-a-service. It's intended to target any programming language and any application developer, but since it can be somewhat abstract, when we bring its concepts to the iOS context, sometimes we lack real world examples.</p><p>That's what motivated the creation of <a href="https://ios-factor.com">iOS factor</a>, written by <a href="https://twitter.com/KrauseFx">@KrauseFx</a>. You can read more about it on his blog post <a href="https://krausefx.com/blog/ios-factor">iOS-factor: A methodology for building high-quality iOS apps</a>.</p><h2>Explicitly declare and isolate dependencies</h2><p>One of the concepts of the twelve-factor methodology (or, one of the 'factors') is on how to manage dependencies of your project.</p><p>The benefit of having dependency versions explicitly declared is to have 100% reproducible environments, even after months or years. You're able to checkout on a git tag 4 years back, knowing that the build will succeed just like it used to do back then.<br><br>You already declare your Swift version in your Xcode project settings, or in a <code>Package.swift</code> or <code>.swift-version</code> file. If you use <a href="https://bundler.io"><code>bundler</code></a> to manage your gems (and you should), your gems such as fastlane are explicitly declared in your <code>Gemfile</code>, and your <code>Gemfile.lock</code> declares the exact versions installed. Your Ruby version can be declared by a <code>.ruby-version</code> file and Ruby version managers such as <code>rbenv</code> and <code>rvm</code> will automatically pick it up. But when it comes to Xcode, there's no industry standard, really.</p><p>This necessity inspired the creation of <code>.xcode-version</code>, a file analogous to <code>.ruby-version</code>, but that defines the Xcode version that should be used in a given environment.</p><p>This is not an 'official thing', so there's a more properly documented proposal you can find <a href="https://github.com/rogerluan/xcode-install/blob/document-xcode-version/XCODE_VERSION.md">here</a>.</p><h2>Hands on</h2><h3>Adoption</h3><p>So if this file is not an industry standard yet, can we actually use this anywhere?</p><p>Yes! The popular <a href="https://github.com/xcpretty/xcode-install">xcode-install</a> gem that installs and updates Xcode versions via CLI actually reads this file already, if defined. It's not officially documented yet, but <a href="https://github.com/xcpretty/xcode-install/pull/424">xcpretty/xcode-install#424</a> should take care of that.</p><h3>The hook</h3><p>To adopt the usage of a dependency version lookup in your development environment, you will need a hook in your workflow to check whether the right version of the dependency is running, and, in case it's not running the right version, install the right one.</p><p>With Xcode it's no different. But we can't run this within Xcode (e.g. in a Run Script) not only because this check doesn't need to happen on every build, but also because it makes no sense for Xcode to potentially trigger an Xcode installation. 😅</p><img src="https://roger.ml/images/posts/xcode-version/inception.jpeg" alt="Inception"/><p>What projects usually have is an environment setup script that every developer has to run before getting started with development. This usually comes in the form of a <a href="https://opensource.com/article/18/8/what-how-makefile">Makefile</a> where developers simply call <code>make</code> to install the project dependencies, or sometimes a custom bash script. Regardless of how your team does it, I think this is a suitable hook for your Xcode version validation step.</p><p>Go ahead and create your <code>.xcode-version</code> file and place it at the same level as your <code>.xcodeproj</code> or <code>.xcworkspace</code> file (usually at the root of your project). This file should contain just a string declaring the Xcode version you'd like to use. Assuming your team should be running Xcode 12.4, ou can create this file by running:</p><pre><code>$ echo -n <span class="string">"12.4"</span> &gt; .<span class="dotAccess">xcode</span>-version
-</code></pre><p>Next, you need to make sure your team has <code>xcode-install</code> gem installed. Again, I recommend declaring this in your <code>Gemfile</code>, in a <code>bundler</code>-powered environment. Then, in your hook, add this line:</p><pre><code>bundle exec xcversion install        
-</code></pre><p>With this command, if the currently installed Xcode version doesn't match the one declared in the version file, it will proceed to the installation. Otherwise, it will print a nice and brief:</p><blockquote><p>Version 12.4 already installed.</p></blockquote><h2>Where to go from here</h2><p>I couldn't recommend more revisiting all your project dependencies, and making sure all of them are being declared explicitly.</p><p>Other than declaring the Xcode version, some common mistakes include not using <a href="https://bundler.io"><code>bundler</code></a> to manage Ruby gems, and using the native macOS Ruby version instead of one managed by a Ruby version manager. In case you missed it, Ruby (and other scripting languages) actually won't be included in macOS by default in future versions of macOS <a href="https://developer.apple.com/documentation/macos-release-notes/macos-catalina-10_15-release-notes">according to Apple</a>.</p><p>If you liked this article, if you spotted mistakes in it, or if you just want to say hi, ping me <a href="https://twitter.com/rogerluan_">@rogerluan_</a> 🤗</p>]]></content:encoded></item><item><guid isPermaLink="true">https://roger.ml/posts/first-post</guid><title>“Hello, New Blog!”</title><description>This marks the first post hosted here. Which means I'm finally migrating off of Medium. Hooray! 🎉</description><link>https://roger.ml/posts/first-post</link><pubDate>Sun, 28 Feb 2021 12:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>“Hello, New Blog!”</h1><img src="https://roger.ml/images/posts/first-post/my-first-post-swiftui.png" alt="My First Post"/><p>This marks the first post hosted here. Which means I'm finally migrating off of Medium. Hooray! 🎉</p><p>“But why?” - you might ask. And it's a fair question. After all, why would anyone leave a free platform that makes publishing content so easy?</p><h2>Overall Look'n'Feel</h2><p>Medium is a writing platform made for everyone. It democratized access to a blogging platform. However, I write mostly about programming topics, and Medium's UI isn't tailored for programming posts. Here I have full control over how the website will look like, how syntax highlighting will display different programming languages, I can format images any way I want, change the website theme, etc - I get to choose how everything looks. And I can change it at any point in time.</p><p>On Medium, simply posting a multiline code snippet is cumbersome, since it has to first be uploaded to a GitHub gist, embeded content displays awfully, and there's not even support to markdown. 😪</p><h2>Content Ownership</h2><p>Here I own the data. No, really. Medium makes it easy for you import content into it, but exporting is painful. <a href="https://medium.com/@macropus/export-your-medium-posts-to-markdown-b5ccc8cb0050">There are some workarounds</a>, but I'd much rather own and store the content myself. Not to mention that by storing it on a git-based system, I get free versioning, and I can even enable a code reviewing process if I like, which would alone be a huge advantage over pretty much any other blogging platform.</p><h2>Other Miscellaneous Reasons</h2><p>Yann Girard <a href="https://yanngirard.typepad.com/yanns_blog/2015/10/why-you-shouldnt-blog-on-medium-.html">mentions</a> many other reasons to dislike Medium. Brand dilution, low click-throughs, extremely high competition, to mention a few.</p><p>There's also the fact that Medium's recommendation algorithm strongly favors paid articles as opposed to free ones, and this completely defeats the purpose of what I look forward to, when blogging. I want the information to flow freely and dissiminate within the community of developers, travelers, or whatever target audience I'm writing to. The goal was never earn money by putting the information behind a pay wall.</p><p>Also, I don't know much about SEO yet, but I can imagine that having full control over SEO metadata might also greatly improve your blog's appearance on search engines. I'll definitely learn more about this in the upcoming months.</p><h1>So, What Now?</h1><p>In the end, given my purposes as a writer, the type of content I write, aesthetics and other minor reasons, a generic blogging platform doesn't fit my needs anymore.</p><p>I might migrate some of the articles from Medium, over to this website. At least the ones I still like, and that are still relevant.</p><p>I might delete them from Medium after migrating them. Maintaining a copy of the content in two places is too costly, time-wise. One way or another one of them gets auto of sync and starts causing issues.</p><p>You can follow me on Twitter (<a href="https://twitter.com/rogerluan_">@rogerluan_</a>) to be notified when a new post comes out here. Or you can subscribe to this website's RSS feed, if you're not on Twitter!</p><p>I'm looking forward to using this new <em>medium</em> (pun intended) to publish my content. 🥳</p>]]></content:encoded></item></channel></rss>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Roger Oba</title><description>Over the course of years I realized I could help the tech community by writing about topics that were too hard to find information about.</description><link>https://roger.ml</link><language>en</language><lastBuildDate>Sat, 27 Aug 2022 15:37:12 -0300</lastBuildDate><pubDate>Sat, 27 Aug 2022 15:37:12 -0300</pubDate><ttl>250</ttl><atom:link href="https://roger.ml/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://roger.ml/posts/testing-dependencies-efficiently</guid><title>Testing multiple local Swift dependencies efficiently</title><description>A modularized project with local dependencies such as Pods or Swift Packages will take too long to run. This is how you can speed them up by up to 90%!</description><link>https://roger.ml/posts/testing-dependencies-efficiently</link><pubDate>Sat, 27 Aug 2022 12:52:00 -0300</pubDate><content:encoded><![CDATA[<h1>Testing multiple local Swift dependencies efficiently</h1><p>For some time I struggled to reduce the test time when having multiple local dependencies, such as Development Pods or local Swift Packages. In a project with, say, 10 local dependencies, it can easily take 1 hour for your CI to run the unit tests for all of them, even if they only have 1 test inside each dependency.</p><p><em>For the purposes of this article, I considered a project with local Swift Package dependencies, and not other types of local dependencies (like static libraries and frameworks, or Development Pods).</em></p><h2>Why does this happen?</h2><p>What I figured is that xcodebuild's iOS Simulator startup time is too slow, and this causes the tests to take significantly longer. For each dependency you have, it will launch a new iOS Simulator process, and this process takes anywhere from 4 to 10 minutes, dependending on the machine it's run - even when launching a "headless" simulator.</p><h2>The solution: Test Plans</h2><p>Xcode Test Plans, which debuted in Xcode 11, serve the purpose of bundling tests together. You may want to create different sets of tests such as "Nightly", "UI", "Performance", etc, or you may simply bundle them up all together in the same Test Plan.</p><p>What I realized is that when using Test Plans, I obtained test runs up to 93% faster than by running individual Swift Package tests (<code>xcodebuild test &lt;swift package&gt;</code>) for <strong>iOS</strong> targets (more on this later).</p><h2>Show me the code!</h2><h3>Setting up your Test Plan</h3><p>Test Plans can be created via Xcode by creating a new file (cmd + N) and choosing "Test Plan" - yes, that simple. However, if you're using local Swift Packages, there's a trick here: your <code>.xcodeproj</code> or <code>.xcworkspace</code> must have the Swift Packages targets you want to test in its folder hierarchy otherwise they won't show up to be added in your Test Plan.</p><img src="https://roger.ml/images/posts/testing-dependencies-efficiently/creating-test-plan.png" alt="Creating a Test Plan file"/><p>Once you have a Test Plan file, open it an click the <code>+</code> at the bottom left of the window and add all the targets you'd like to test.</p><p>Next, you may want to convert your one of your schemes of your main project (one that consumes those dependencies) to use Test Plans, or not. The only difference is that if you convert it, you can simply run <code>xcodebuild test -scheme &lt;your_scheme&gt;</code>, and if not, then you'll have to specify the name of your Test Plan explicitly, like <code>xcodebuild test -testPlan &lt;test_plan_name&gt;</code>.</p><p>To convert your scheme, open its Edit window on Xcode, and select <code>Convert to use Test Plans…</code>:</p><img src="https://roger.ml/images/posts/testing-dependencies-efficiently/converting-test-plan.png" alt="Converting Scheme to use Test Plans"/><h3>Collecting code coverage</h3><p>Every setup is different, but I like using Rake tasks to run tests and collect code coverage. You may be using <em>fastlane</em>, in which case the APIs used will be different but the concepts remain the same. Also, I'll be using Code Climate in my example as it's the code coverage service I usually use for Swift projects.</p><p>First, we have to kick off the code coverage program that Code Climate distributes:</p><pre><code class="language-ruby"># Path to your Code Climate test reporter binary. You may want to fetch this from remote and do a checksum check before running it.
+test_reporter_bin = "path/to/your/cc-test-reporter"
+
+# Invoke the before-build function required by Code Climate, before collecting your code coverage
+sh("#{test_reporter_bin} before-build")
+</code></pre><p>Then we build the Test</p><pre><code class="language-ruby"># This becomes your new Derived Data path, stored in your project directory (you can gitignore this new folder)
+build_path = ".build"
+
+xcodebuild = []
+xcodebuild &lt;&lt; "arch -x86_64" # Only required if your project only runs on Rosetta 2
+xcodebuild &lt;&lt; "xcodebuild test"
+xcodebuild &lt;&lt; "-workspace your-project.xcworkspace"
+xcodebuild &lt;&lt; "-scheme 'Your Scheme'"
+xcodebuild &lt;&lt; "-destination 'platform=iOS Simulator,name=iPhone 14 Pro'"
+xcodebuild &lt;&lt; "-enableCodeCoverage=YES"
+xcodebuild &lt;&lt; "-derivedDataPath '#{build_path}/your-project'"
+xcodebuild &lt;&lt; "-clonedSourcePackagesDirPath '#{build_path}/SourcePackages'"
+xcodebuild &lt;&lt; "-quiet" # Optionally silents all xcodebuild output
+sh(xcodebuild.join(" "))
+</code></pre><p>Since xcodebuild will collect code coverage for all the targets that it goes through, including 3rd party, we have to filter out which targets we're interested. Let's declare an array for this purpose, that will be used later:</p><pre><code class="language-ruby"># You may want to collect this array programmatically somehow via scripting, for instance by crawling your directory hierarchy and reading which packages have test targets. For simplicity sake here we're just declaring them statically. 
+targets_to_keep = %w(
+  foo
+  bar
+  baz
+)
+</code></pre><p>Then we must interpret the <code>.xcresult</code> file produced by xcodebuild, and convert it to a format that Code Climate can interpret:</p><pre><code class="language-ruby"># This is a special path where your xcresult (test results) will be stored, within the Derived Data path specified by you earlier.
+most_recent_xcresult = Dir.glob("#{build_path}/your-project/Logs/Test/*.xcresult").max_by { |f| File.mtime(f) }
+
+# Specify where we're going to store the code coverage reports. Feel free to gitignore these directories or clean them up after collection
+xcodebuild_reports_directory = "coverage/xcodebuild_only_reports"
+xccov_report = File.absolute_path("#{xcodebuild_reports_directory}/your-project-xccov-report.json")
+output_file = File.expand_path("coverage/your-project-codeclimate.json")
+FileUtils.mkdir_p(xcodebuild_reports_directory)
+
+# Use `xccov` (a built-in tool from Xcode) to convert the .xcresult into a json file that uses the xccov format
+sh("xcrun xccov view --report --json '#{most_recent_xcresult}' &gt; #{xccov_report}")
+
+# Invoke this function that will clean up the code coverage report from targets we're not interested in collecting data for
+remove_all_targets_except(xccov_report, targets_to_keep)
+
+# Finally, format the json report (that uses the xccov format) into another json format specific to Code Climate 
+sh("#{test_reporter_bin} format-coverage '#{xccov_report}' --input-type xccov --output '#{output_file}'")
+</code></pre><p>Note that this snippet makes use of a function you must declare in your Rakefile called <code>remove_all_targets_except</code>. More about it here: <a href="https://gist.github.com/rogerluan/aaba6694a45ed5381e7e6b2259abd9f7">https://gist.github.com/rogerluan/aaba6694a45ed5381e7e6b2259abd9f7</a></p><p>Finally, submit the code coverage report to Code Climate:</p><pre><code class="language-ruby">sh("#{test_reporter_bin} upload-coverage --input '#{output_file}'")
+</code></pre><h2>Monorepo setup</h2><p>If you repository has multiple projects in it, this means you'll probably have more than 1 TestPlans (one for each project). If that's your case, this means you'll still have to merge the code coverage reports of your multiple projects before uploading them to Code Climate, by using the <code>sum-coverage --parts &lt;number_of_parts&gt;</code> function of their code coverage reporter tool. Again, this is only for Code Climate, so your mileage may vary.</p><h1>Conclusion</h1><p>With the setup I described in this article, I was able to reduce build times from ~61mins to ~4mins (when running locally), and from ~90mins to ~20mins (when running on Jenkins). That's an improvement of 77-93%!</p><p>One caveat with Swift Packages specifically is that, if your package is capable of running on macOS target (e.g. has no iOS dependency like UIKit), then your fastest alternative will certainly be using <code>swift test</code>, because it usually takes under 1 second to run whatever test suite you may have (of course, as long as they're not time-dependent). Yes, really.</p><p>I hope this setup also helps you and your team to reduce build times significantly. And if you know other tricks to reduce test time, drop a note on my twitter <a href="https://twitter.com/rogerluan_">@rogerluan_</a>!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://roger.ml/posts/app-store-screenshots</guid><title>How to update App Store screenshots without uploading a new build</title><description>Updating the screenshots of your app without uploading a new build to the App Store has been impossible. Until now!</description><link>https://roger.ml/posts/app-store-screenshots</link><pubDate>Sat, 30 Apr 2022 09:54:00 -0300</pubDate><content:encoded><![CDATA[<h1>How to update App Store screenshots without uploading a new build</h1><img src="https://roger.ml/images/posts/app-store-screenshots/app-collection-banner.png" alt="Banner"/><p><em>Credit: <a href="https://www.apple.com/au/app-store/developing-for-the-app-store">Apple</a></em></p><p>Since 2008, when the App Store debutted, updating the screenshots that showcase your app in the App Store without submitting a new app binary wasn't possible. That has changed in early 2022 and might save you a good chunk of time.</p><p>In 2021 WWDC, Apple announced that they'd launch "Product Page Optimization" changes to help developers and marketers <em>"compare different app icons, screenshots, and app previews on your App Store product page"</em>. Long story short, this is an "A/B testing" or "experiment" functionality for App Store metadata - something that has been available in the Google Play Store for several years now.</p><p>The catch here is that you can take advantage of that system to update your App Store screenshots and app previews without requiring you to go through the tedious and time consuming process of compiling a new build, submitting it to App Store Connect, waiting for it to be processed, and submit it for review all over again.</p><h1>Cut to the chase!</h1><p>Alright, so the short version is: you'll create an App Store experiment, then immediately apply it to your live page 💥</p><ol><li>Open the Product Page Optimization menu and create a new test</li></ol><img src="https://roger.ml/images/posts/app-store-screenshots/product-page-optimization.png" alt="App Store Connect Product Page Optimization"/><img src="https://roger.ml/images/posts/app-store-screenshots/create-product-page-test.png" alt="App Store Connect Create New Test"/><ol start="2"><li>Update your metadata</li></ol><p>Currently you can only update screenshots and app preview.</p><img src="https://roger.ml/images/posts/app-store-screenshots/update-test.png" alt="App Store Connect Update Test"/><ol start="3"><li>Start the test</li></ol><p>Once you're done with your changes, you gotta start the test by hitting "Start Test" on the top right of the page. Once it's active you'll see this:</p><img src="https://roger.ml/images/posts/app-store-screenshots/active-test.png" alt="App Store Connect Active Test"/><ol start="4"><li>Apply Treatment to original product page</li></ol><p>To make the changes live, you gotta hit the "Apply Treatment to Original Product Page" button.</p><img src="https://roger.ml/images/posts/app-store-screenshots/apply-treatment.png" alt="App Store Connect Apply Treatment Confirmation Screen"/><ol start="5"><li>That's it!</li></ol><img src="https://roger.ml/images/posts/app-store-screenshots/success-page.png" alt="App Store Connect Success Message"/><h1>Conclusion</h1><p>It's a pretty straightforward process to update your screenshots without going through the process of uploading a new binary, nor sending your changes for Apple to review them. These changes happen instantly (on your side) and may take up to 24 hours to be applied and visible throughout the many App Stores around the world (as usual).</p><p>I hope Apple allows us for customize more metadata over time. Screenshots and app previews are great, but it's often super useful to be able to update all the metadata without requiring a new app update: keywords, description, copyright notice, etc.</p><p>If you liked this article, if you spotted mistakes in it, or if you just want to say hi, ping me <a href="https://twitter.com/rogerluan_">@rogerluan_</a> 🤗</p>]]></content:encoded></item><item><guid isPermaLink="true">https://roger.ml/posts/xcode-version</guid><title>Automate Xcode version standardization across your team</title><description>Everyone in your team should be using the same dependencies versions. But is it possible to standardize the Xcode version too?</description><link>https://roger.ml/posts/xcode-version</link><pubDate>Thu, 25 Mar 2021 03:37:00 -0300</pubDate><content:encoded><![CDATA[<h1>Automating Xcode version standardization across your team</h1><img src="https://roger.ml/images/posts/xcode-version/dependencies.png" alt="Dependencies"/><p>At some point during your research on software development methodologies, you might stumble upon the <a href="https://12factor.net/">The Twelve-Factor App</a> methodology. For those who don't know, this is a methodology for building high-quality software-as-a-service. It's intended to target any programming language and any application developer, but since it can be somewhat abstract, when we bring its concepts to the iOS context, sometimes we lack real world examples.</p><p>That's what motivated the creation of <a href="https://ios-factor.com">iOS factor</a>, written by <a href="https://twitter.com/KrauseFx">@KrauseFx</a>. You can read more about it on his blog post <a href="https://krausefx.com/blog/ios-factor">iOS-factor: A methodology for building high-quality iOS apps</a>.</p><h2>Explicitly declare and isolate dependencies</h2><p>One of the concepts of the twelve-factor methodology (or, one of the 'factors') is on how to manage dependencies of your project.</p><p>The benefit of having dependency versions explicitly declared is to have 100% reproducible environments, even after months or years. You're able to checkout on a git tag 4 years back, knowing that the build will succeed just like it used to do back then.<br><br>You already declare your Swift version in your Xcode project settings, or in a <code>Package.swift</code> or <code>.swift-version</code> file. If you use <a href="https://bundler.io"><code>bundler</code></a> to manage your gems (and you should), your gems such as fastlane are explicitly declared in your <code>Gemfile</code>, and your <code>Gemfile.lock</code> declares the exact versions installed. Your Ruby version can be declared by a <code>.ruby-version</code> file and Ruby version managers such as <code>rbenv</code> and <code>rvm</code> will automatically pick it up. But when it comes to Xcode, there's no industry standard, really.</p><p>This necessity inspired the creation of <code>.xcode-version</code>, a file analogous to <code>.ruby-version</code>, but that defines the Xcode version that should be used in a given environment.</p><p>This is not an 'official thing', so there's a more properly documented proposal you can find <a href="https://github.com/rogerluan/xcode-install/blob/document-xcode-version/XCODE_VERSION.md">here</a>.</p><h2>Hands on</h2><h3>Adoption</h3><p>So if this file is not an industry standard yet, can we actually use this anywhere?</p><p>Yes! The popular <a href="https://github.com/xcpretty/xcode-install">xcode-install</a> gem that installs and updates Xcode versions via CLI actually reads this file already, if defined. It's not officially documented yet, but <a href="https://github.com/xcpretty/xcode-install/pull/424">xcpretty/xcode-install#424</a> should take care of that.</p><h3>The hook</h3><p>To adopt the usage of a dependency version lookup in your development environment, you will need a hook in your workflow to check whether the right version of the dependency is running, and, in case it's not running the right version, install the right one.</p><p>With Xcode it's no different. But we can't run this within Xcode (e.g. in a Run Script) not only because this check doesn't need to happen on every build, but also because it makes no sense for Xcode to potentially trigger an Xcode installation. 😅</p><img src="https://roger.ml/images/posts/xcode-version/inception.jpeg" alt="Inception"/><p>What projects usually have is an environment setup script that every developer has to run before getting started with development. This usually comes in the form of a <a href="https://opensource.com/article/18/8/what-how-makefile">Makefile</a> where developers simply call <code>make</code> to install the project dependencies, or sometimes a custom bash script. Regardless of how your team does it, I think this is a suitable hook for your Xcode version validation step.</p><p>Go ahead and create your <code>.xcode-version</code> file and place it at the same level as your <code>.xcodeproj</code> or <code>.xcworkspace</code> file (usually at the root of your project). This file should contain just a string declaring the Xcode version you'd like to use. Assuming your team should be running Xcode 12.4, ou can create this file by running:</p><pre><code class="language-sh">$ echo -n "12.4" &gt; .xcode-version
+</code></pre><p>Next, you need to make sure your team has <code>xcode-install</code> gem installed. Again, I recommend declaring this in your <code>Gemfile</code>, in a <code>bundler</code>-powered environment. Then, in your hook, add this line:</p><pre><code class="language-sh">bundle exec xcversion install        
+</code></pre><p>With this command, if the currently installed Xcode version doesn't match the one declared in the version file, it will proceed to the installation. Otherwise, it will print a nice and brief:</p><blockquote><p>Version 12.4 already installed.</p></blockquote><h2>Where to go from here</h2><p>I couldn't recommend more revisiting all your project dependencies, and making sure all of them are being declared explicitly.</p><p>Other than declaring the Xcode version, some common mistakes include not using <a href="https://bundler.io"><code>bundler</code></a> to manage Ruby gems, and using the native macOS Ruby version instead of one managed by a Ruby version manager. In case you missed it, Ruby (and other scripting languages) actually won't be included in macOS by default in future versions of macOS <a href="https://developer.apple.com/documentation/macos-release-notes/macos-catalina-10_15-release-notes">according to Apple</a>.</p><p>If you liked this article, if you spotted mistakes in it, or if you just want to say hi, ping me <a href="https://twitter.com/rogerluan_">@rogerluan_</a> 🤗</p>]]></content:encoded></item><item><guid isPermaLink="true">https://roger.ml/posts/test-css</guid><title>Markdown cheatsheet</title><description></description><link>https://roger.ml/posts/test-css</link><pubDate>Tue, 16 Mar 2021 23:53:07 -0300</pubDate><content:encoded><![CDATA[<h1>Markdown cheatsheet</h1><p><em>(Also see <a href="">remarkable</a>, the markdown parser created by the author of this cheatsheet)</em></p><h2>Table of contents</h2><ul><li><a href="#standard-features">Standard features</a><ul><li><a href="#headings">Headings</a></li><li><a href="#paragraphs">Paragraphs</a></li><li><a href="#breaks">Breaks</a></li><li><a href="#horizontal-rule">Horizontal Rule</a></li><li><a href="#emphasis">Emphasis</a><ul><li><a href="#bold">Bold</a></li><li><a href="#italics">Italics</a></li></ul></li><li><a href="#blockquotes">Blockquotes</a></li><li><a href="#lists">Lists</a><ul><li><a href="#unordered">Unordered</a></li><li><a href="#ordered">Ordered</a></li><li><a href="#time-saving-tip">Time-saving Tip</a></li></ul></li><li><a href="#code">Code</a><ul><li><a href="#inline-code">Inline code</a></li><li><a href="#fenced-code-block">"Fenced" code block</a></li><li><a href="#indented-code">Indented code</a></li><li><a href="#syntax-highlighting">Syntax highlighting</a></li></ul></li><li><a href="#links">Links</a><ul><li><a href="#autolinks">Autolinks</a></li><li><a href="#inline-links">Inline links</a></li><li><a href="#link-titles">Link titles</a></li><li><a href="#named-anchors">Named Anchors</a></li></ul></li><li><a href="#images">Images</a></li><li><a href="#raw-html">Raw HTML</a></li><li><a href="#escaping-with-backslashes">Escaping with backslashes</a></li></ul></li><li><a href="#non-standard-features">Non-standard features</a><ul><li><a href="#strikethrough">Strikethrough</a></li><li><a href="#todo-list">Todo List</a></li><li><a href="#tables">Tables</a><ul><li><a href="#aligning-cells">Aligning cells</a></li></ul></li><li><a href="#footnotes">Footnotes</a><ul><li><a href="#inline-footnotes">Inline footnotes</a></li></ul></li><li><a href="#additional-information">Additional Information</a><ul><li><a href="#what-is-markdown">What is markdown?</a></li><li><a href="#other-resources">Other Resources</a></li><li><a href="#contributing">Contributing</a></li></ul></li></ul></li></ul><h1>Standard features</h1><pre><code class="language-swift">import Foundation
+import Publish
+import Plot
+import SplashPublishPlugin
+import Ink
+
+// This type acts as the configuration for your website.
+struct RogerMl: Website {
+    enum SectionID: String, WebsiteSectionID {
+        // Add the sections that you want your website to contain here:
+        case posts
+        case about = "About"
+        case contact = "Contact"
+    }
+
+    struct ItemMetadata: WebsiteItemMetadata {
+        // Add any site-specific metadata that you want to use here.
+    }
+
+    // Update these properties to configure your website:
+    var url = URL(string: "https://roger.ml")!
+    var name = "Roger Oba"
+    var description = ""
+    var language: Language { .english }
+    var imagePath: Path? { nil }
+    var favicon: Favicon? { Favicon(path: "favicon.svg", type: "image/svg+xml") }
+}
+
+// This will generate your website using the built-in Foundation theme:
+try RogerMl().publish(
+    withTheme: .roger,
+    indentation: .spaces(4),
+//    at: Path.,
+    deployedUsing: .gitHub("rogerluan/rogerluan.github.io"),
+    additionalSteps: [
+        .step(named: "Create 'about' Page") { context in
+            let about = try context.file(at: "/Content/about/index.md")
+            let page = try context.makeMarkdownContentFactory().makePage(fromFile: about, at: "/about")
+            context.addPage(page)
+        },
+        .step(named: "Create 'contact' Page") { context in
+            let about = try context.file(at: "/Content/contact/index.md")
+            let page = try context.makeMarkdownContentFactory().makePage(fromFile: about, at: "/contact")
+            context.addPage(page)
+        },
+    ],
+    plugins: [ .splash(withClassPrefix: "") ]
+)
+</code></pre><p>The following markdown features are defined by the <a href="">CommonMark</a> standard, and are generally supported by all markdown parsers and editors.</p><h2>Headings</h2><p>Headings from <code>h1</code> through <code>h6</code> are constructed with a <code>#</code> for each level:</p><pre><code># h1 Heading
+## h2 Heading
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+</code></pre><p>Renders to this HTML:</p><pre><code class="language-html">&lt;h1&gt;h1 Heading&lt;/h1&gt;
+&lt;h2&gt;h2 Heading&lt;/h2&gt;
+&lt;h3&gt;h3 Heading&lt;/h3&gt;
+&lt;h4&gt;h4 Heading&lt;/h4&gt;
+&lt;h5&gt;h5 Heading&lt;/h5&gt;
+&lt;h6&gt;h6 Heading&lt;/h6&gt;
+</code></pre><p>Which looks like this in the browser:</p><h1>h1 Heading</h1><h2>h2 Heading</h2><h3>h3 Heading</h3><h4>h4 Heading</h4><h5>h5 Heading</h5><h6>h6 Heading</h6><p><strong>A note about "Setext" Headings</strong></p><p>Note that this document only describes <a href="https://spec.commonmark.org/0.28/#atx-headings">ATX headings</a>, as it is the preferred syntax for writing headings. However, the CommonMark specification also describes <a href="https://spec.commonmark.org/0.28/#setext-headings">Setext headings</a>, a heading format that is denoted by a line of dashes or equal signes following the heading. It's recommended by the author of this guide that you use only ATX headings, as they are easier to write and read in text editors, and are less likeley to conflict with other syntaxes and demarcations from language extensions.</p><h2>Paragraphs</h2><p>Body copy written as normal plain-text will be wrapped with <code>&lt;p&gt;&lt;/p&gt;</code> tags in the rendered HTML.</p><p>So this:</p><pre><code>Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.
+</code></pre><p>Renders to this HTML:</p><pre><code class="language-html">&lt;p&gt;Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.&lt;/p&gt;
+</code></pre><h2>Breaks</h2><p>You can use multiple consecutive newline characters (<code>\n</code>) to create extra spacing between sections in a markdown document. However, if you need to ensure that extra newlines are not collapsed, you can use as many HTML <code>&lt;br&gt;</code> elements as you want.</p><h2>Horizontal Rule</h2><p>The HTML <code>&lt;hr&gt;</code> element is for creating a "thematic break" between paragraph-level elements. In markdown, you can use of the following for this purpose:</p><ul><li><code>___</code>: three consecutive underscores</li><li><code>---</code>: three consecutive dashes</li><li><code>***</code>: three consecutive asterisks</li></ul><p>Renders to:</p><p>___</p><hr><hr><h2>Emphasis</h2><h3>Bold</h3><p>For emphasizing a snippet of text with a heavier font-weight.</p><p>The following snippet of text is <strong>rendered as bold text</strong>.</p><pre><code>**rendered as bold text**
+</code></pre><p>renders to:</p><p><strong>rendered as bold text</strong></p><p>and this HTML</p><pre><code class="language-html">&lt;strong&gt;rendered as bold text&lt;/strong&gt;
+</code></pre><h3>Italics</h3><p>For emphasizing a snippet of text with italics.</p><p>The following snippet of text is <em>rendered as italicized text</em>.</p><pre><code>_rendered as italicized text_
+</code></pre><p>renders to:</p><p><em>rendered as italicized text</em></p><p>and this HTML:</p><pre><code class="language-html">&lt;em&gt;rendered as italicized text&lt;/em&gt;
+</code></pre><h2>Blockquotes</h2><p>Used for defining a section of quoting text from another source, within your document.</p><p>To create a blockquote, use <code>&gt;</code> before any text you want to quote.</p><pre><code>&gt; Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante
+</code></pre><p>Renders to:</p><blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p></blockquote><p>And the generated HTML from a markdown parser might look something like this:</p><pre><code class="language-html">&lt;blockquote&gt;
+  &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.&lt;/p&gt;
+&lt;/blockquote&gt;
+</code></pre><p>Blockquotes can also be nested:</p><pre><code>&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+&gt;&gt; Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
+odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+&gt;&gt;&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+</code></pre><p>Renders to:</p><blockquote><p>Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.&gt; Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctorodio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.&gt;&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.</p></blockquote><h2>Lists</h2><h3>Unordered Lists</h3><p>A list of items in which the order of the items does not explicitly matter.</p><p>You may use any of the following symbols to denote bullets for each list item:</p><pre><code>* valid bullet
+- valid bullet
++ valid bullet
+</code></pre><p>For example</p><pre><code>+ Lorem ipsum dolor sit amet
++ Consectetur adipiscing elit
++ Integer molestie lorem at massa
++ Facilisis in pretium nisl aliquet
++ Nulla volutpat aliquam velit
+  - Phasellus iaculis neque
+  - Purus sodales ultricies
+  - Vestibulum laoreet porttitor sem
+  - Ac tristique libero volutpat at
++ Faucibus porta lacus fringilla vel
++ Aenean sit amet erat nunc
++ Eget porttitor lorem
+</code></pre><p>Renders to:</p><ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit<ul><li>Phasellus iaculis neque</li><li>Purus sodales ultricies</li><li>Vestibulum laoreet porttitor sem</li><li>Ac tristique libero volutpat at</li></ul></li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ul><p>And this HTML</p><pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;Lorem ipsum dolor sit amet&lt;/li&gt;
+  &lt;li&gt;Consectetur adipiscing elit&lt;/li&gt;
+  &lt;li&gt;Integer molestie lorem at massa&lt;/li&gt;
+  &lt;li&gt;Facilisis in pretium nisl aliquet&lt;/li&gt;
+  &lt;li&gt;Nulla volutpat aliquam velit
+    &lt;ul&gt;
+      &lt;li&gt;Phasellus iaculis neque&lt;/li&gt;
+      &lt;li&gt;Purus sodales ultricies&lt;/li&gt;
+      &lt;li&gt;Vestibulum laoreet porttitor sem&lt;/li&gt;
+      &lt;li&gt;Ac tristique libero volutpat at&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Faucibus porta lacus fringilla vel&lt;/li&gt;
+  &lt;li&gt;Aenean sit amet erat nunc&lt;/li&gt;
+  &lt;li&gt;Eget porttitor lorem&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre><h3>Ordered Lists</h3><p>A list of items in which the order of items does explicitly matter.</p><pre><code>1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+4. Facilisis in pretium nisl aliquet
+5. Nulla volutpat aliquam velit
+6. Faucibus porta lacus fringilla vel
+7. Aenean sit amet erat nunc
+8. Eget porttitor lorem
+</code></pre><p>Renders to:</p><ol><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit</li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ol><p>And this HTML:</p><pre><code class="language-html">&lt;ol&gt;
+  &lt;li&gt;Lorem ipsum dolor sit amet&lt;/li&gt;
+  &lt;li&gt;Consectetur adipiscing elit&lt;/li&gt;
+  &lt;li&gt;Integer molestie lorem at massa&lt;/li&gt;
+  &lt;li&gt;Facilisis in pretium nisl aliquet&lt;/li&gt;
+  &lt;li&gt;Nulla volutpat aliquam velit&lt;/li&gt;
+  &lt;li&gt;Faucibus porta lacus fringilla vel&lt;/li&gt;
+  &lt;li&gt;Aenean sit amet erat nunc&lt;/li&gt;
+  &lt;li&gt;Eget porttitor lorem&lt;/li&gt;
+&lt;/ol&gt;
+</code></pre><h3>Time-saving Tip!</h3><p>Sometimes lists change, and when they do it's a pain to re-order all of the numbers. Markdown solves this problem by allowing you to simply use <code>1.</code> before each item in the list.</p><p>For example:</p><pre><code>1. Lorem ipsum dolor sit amet
+1. Consectetur adipiscing elit
+1. Integer molestie lorem at massa
+1. Facilisis in pretium nisl aliquet
+1. Nulla volutpat aliquam velit
+1. Faucibus porta lacus fringilla vel
+1. Aenean sit amet erat nunc
+1. Eget porttitor lorem
+</code></pre><p>Automatically re-numbers the items and renders to:</p><ol><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit</li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ol><h2>Code</h2><h3>Inline code</h3><p>Wrap inline snippets of code with a single backtick: <code>`</code>.</p><p>For example, to show <code>&lt;div&gt;&lt;/div&gt;</code> inline with other text, just wrap it in backticks.</p><pre><code class="language-html">For example, to show `&lt;div&gt;&lt;/div&gt;` inline with other text, just wrap it in backticks.
+</code></pre><h3>"Fenced" code block</h3><p>Three consecutive backticks, referred to as "code fences", are used to denote multiple lines of code: <code>```</code>.</p><p>For example, this:</p><pre>
+```html
+Example text here...
+```
+</pre><p>Renders to something like this in HTML:</p><pre><code class="language-html">&lt;pre&gt;
+  &lt;p&gt;Example text here...&lt;/p&gt;
+&lt;/pre&gt;
+</code></pre><p>And appears like this when viewed in a browser:</p><pre><code>Example text here...
+</code></pre><h3>Indented code</h3><p>You may also indent several lines of code by at least four spaces, but this is not recommended as it is harder to read, harder to maintain, and doesn't support syntax highlighting.</p><p>Example:</p><pre><code>    // Some comments
+    line 1 of code
+    line 2 of code
+    line 3 of code
+</code></pre><p>// Some comments line 1 of code line 2 of code line 3 of code</p><h3>Syntax highlighting</h3><p>Various markdown parsers, such as <a href="https://github.com/jonschlinkert/remarkable">remarkable</a>, support syntax highlighting with fenced code blocks. To activate the correct styling for the language inside the code block, simply add the file extension of the language you want to use directly after the first code "fence": <code>```js</code>, and syntax highlighting will automatically be applied in the rendered HTML (if supported by the parser). For example, to apply syntax highlighting to JavaScript code:</p><pre>
+```js
+grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+});
+```
+</pre><p>Which renders to:</p><pre><code class="language-js">grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+});
+</code></pre><p>And this complicated HTML is an example of what might be generated by the markdown parser, when syntax highlighting is applied by a library like <a href="https://highlightjs.org/">highlight.js</a>:</p><pre><code class="language-xml">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;grunt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;initConfig&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+  &lt;span class="nx"&gt;assemble&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;options&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="nx"&gt;assets&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'docs/assets'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'src/data/*.{json,yml}'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;helpers&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'src/custom-helpers.js'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;partials&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'src/partials/**/*.{hbs,md}'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="nx"&gt;pages&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="nx"&gt;options&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;layout&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'default.hbs'&lt;/span&gt;
+      &lt;span class="p"&gt;},&lt;/span&gt;
+      &lt;span class="nx"&gt;files&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s1"&gt;'./'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'src/templates/pages/index.hbs'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+      &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+</code></pre><h2>Links</h2><h3>Autolinks</h3><p>Not supported by roger.ml</p><h3>Inline links</h3><pre><code>[Assemble](http://assemble.io)
+</code></pre><p>Renders to (hover over the link, there is no tooltip):</p><p><a href="http://assemble.io">Assemble</a></p><p>HTML:</p><pre><code class="language-html">&lt;a href="http://assemble.io"&gt;Assemble&lt;/a&gt;
+</code></pre><h3>Link titles</h3><pre><code>[Assemble](https://github.com/assemble/ "Visit Assemble!")
+</code></pre><p>Renders to (hover over the link, there should be a tooltip):</p><p><a href="https://github.com/assemble/ "Visit Assemble!"">Assemble</a></p><p>HTML:</p><pre><code class="language-html">&lt;a href="https://github.com/assemble/" title="Visit Assemble!"&gt;Assemble&lt;/a&gt;
+</code></pre><h3>Named Anchors</h3><p>Named anchors enable you to jump to the specified anchor point on the same page.</p><p>For example, the following "chapter" links:</p><pre><code># Table of Contents
+  * [Chapter 1](#chapter-1)
+  * [Chapter 2](#chapter-2)
+  * [Chapter 3](#chapter-3)
+</code></pre><p>...will jump to these sections:</p><pre><code>## Chapter 1 &lt;a name="chapter-1"&gt;&lt;/a&gt;
+Content for chapter one.
+
+## Chapter 2 &lt;a name="chapter-2"&gt;&lt;/a&gt;
+Content for chapter one.
+
+## Chapter 3 &lt;a name="chapter-3"&gt;&lt;/a&gt;
+Content for chapter one.
+</code></pre><p><strong>Anchor placement</strong></p><p>Note that placement of achors is arbitrary, you can put them anywhere you want, not just in headings. This makes adding cross-references easy when writing markdown.</p><h2>Images</h2><p>Images have a similar syntax to links but include a preceding exclamation point.</p><pre><code>![Minion](http://octodex.github.com/images/minion.png)
+</code></pre><img src="http://octodex.github.com/images/minion.png" alt="Minion"/><p>or</p><pre><code>![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+</code></pre><img src="http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat"" alt="Alt text"/><p>Like links, Images also have a footnote style syntax</p><pre><code>![Alt text][id]
+</code></pre><img src="http://octodex.github.com/images/dojocat.jpg  "The Dojocat"" alt="Alt text"/><p>With a reference later in the document defining the URL location:</p><pre><code>[id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+</code></pre><h2>Raw HTML</h2><p>Any text between <code>&lt;</code> and <code>&gt;</code> that looks like an HTML tag will be parsed as a raw HTML tag and rendered to HTML without escaping.</p><p><em>(Note that markdown parsers do not attempt to validate your HTML).</em></p><p>Example:</p><pre><code>**Visit &lt;a href="https://github.com"&gt;Jon Schlinkert's GitHub Profile&lt;/a&gt;.**
+</code></pre><p>Renders to:</p><p><strong>Visit <a href="https://github.com">Jon Schlinkert's GitHub Profile</a>.</strong></p><h2>Escaping with backslashes</h2><p>Any ASCII punctuation character may be escaped using a single backslash.</p><p>Example:</p><pre><code>\*this is not italic*
+</code></pre><p>Renders to:</p><p>*this is not italic*</p><h1>Non-standard features</h1><p>The following markdown features are not defined by the <a href="">CommonMark</a> specification, but they are commonly supported by markdown parsers and editors, as well as sites like GitHub and GitLab.</p><h2>Strikethrough</h2><p>In GitHub Flavored Markdown (GFM) you can do strickthroughs.</p><pre><code>~~Strike through this text.~~
+</code></pre><p>Which renders to:</p><p><s>Strike through this text.</s></p><h3>Todo List</h3><pre><code>- [ ] Lorem ipsum dolor sit amet
+- [ ] Consectetur adipiscing elit
+- [x] Integer molestie lorem at massa
+</code></pre><p>Renders to:</p><ul><li>[ ] Lorem ipsum dolor sit amet</li><li>[ ] Consectetur adipiscing elit</li><li>[x] Integer molestie lorem at massa</li></ul><p><strong>Links in todo lists</strong></p><pre><code>- [ ] [foo](#bar)
+- [ ] [baz](#qux)
+- [x] [fez](#faz)
+</code></pre><p>Renders to:</p><ul><li>[ ] <a href="#bar">foo</a></li><li>[ ] <a href="#qux">baz</a></li><li>[x] <a href="#faz">fez</a></li></ul><h2>Tables</h2><p>Tables are created by adding pipes as dividers between each cell, and by adding a line of dashes (also separated by bars) beneath the header <em>(this line of dashes is required)</em>.</p><ul><li>pipes do not need to be vertically aligned.</li><li>pipes on the left and right sides of the table are sometimes optional</li><li>three or more dashes must be used for each cell in the <em>separator</em> row (between the table header and body)</li><li>the left and right pipes are optional with some markdown parsers</li></ul><p>Example:</p><pre><code>| Option | Description |
+| --- | --- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><p>Renders to:</p><table><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td>data</td><td>path to data files to supply the data that will be passed into templates.</td></tr><tr><td>engine</td><td>engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td>ext</td><td>extension to be used for dest files.</td></tr></tbody></table><p>And this HTML:</p><pre><code class="language-html">&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Option&lt;/th&gt;
+    &lt;th&gt;Description&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;data&lt;/td&gt;
+    &lt;td&gt;path to data files to supply the data that will be passed into templates.&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;engine&lt;/td&gt;
+    &lt;td&gt;engine to be used for processing templates. Handlebars is the default.&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;ext&lt;/td&gt;
+    &lt;td&gt;extension to be used for dest files.&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre><h3>Aligning cells</h3><p><strong>Center text in a column</strong></p><p>To center the text in a column, add a colon to the middle of the dashes in the row beneath the header.</p><pre><code>| Option | Description |
+| :--: | :--: |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><table><thead><tr><th align="center">Option</th><th align="center">Description</th></tr></thead><tbody><tr><td align="center">data</td><td align="center">path to data files to supply the data that will be passed into templates.</td></tr><tr><td align="center">engine</td><td align="center">engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td align="center">ext</td><td align="center">extension to be used for dest files.</td></tr></tbody></table><p><strong>Right-align the text in a column</strong></p><p>To right-align the text in a column, add a colon to the middle of the dashes in the row beneath the header.</p><pre><code>| Option | Description |
+| --: | --:|
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><p>Renders to:</p><table><thead><tr><th align="right">Option</th><th align="right">Description</th></tr></thead><tbody><tr><td align="right">data</td><td align="right">path to data files to supply the data that will be passed into templates.</td></tr><tr><td align="right">engine</td><td align="right">engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td align="right">ext</td><td align="right">extension to be used for dest files.</td></tr></tbody></table><h2>Footnotes</h2><blockquote><p>Markdown footnotes are not officially suppored by the <a href="">CommonMark</a> specification. However, the feature is supported by <a href="">remarkable</a> and other markdown parsers, and it's very useful when available.</p></blockquote><p>Markdown footnotes are denoted by an opening square bracket, followed by a caret, followed by a number and a closing square bracket: <code>[^1]</code>.</p><pre><code>This is some text[^1] with a footnote reference link.
+</code></pre><p>The accompanying text for the footnote can be added elsewhere in the document using the following syntax:</p><pre><code>[^1]: "This is a footnote"
+</code></pre><p>When rendered to HTML, footnotes are "stacked" by the markdown parser at the bottom of the file, in the order in which the footnotes were defined.</p><h3>Inline footnotes</h3><p>Some markdown parsers like <a href="https://github.com/jonschlinkert/remarkable">Remarkable</a> also support inline footnotes. Inline footnotes are written using the following syntax: <code>[^2 "This is an inline footnote"]</code>.</p><h2>Additional Information</h2><h3>What is markdown?</h3><blockquote><p>Markdown is "a plain text format for writing structured documents, based on formatting conventions from email and usenet" -- <a href="">CommonMark</a></p></blockquote><p>Sites like GitHub and Stackoverflow have popularized the use markdown as a plain-text alternative to traditional text editors, for writing things like documentation and comments.</p><h3>Other Resources</h3><ul><li><a href="https://ben.balter.com/2012/10/19/we-ve-been-trained-to-make-paper/">We've been trained to make paper</a> - A great blog post about why markdown frees us from the shackles of proprietary formats imposed by bloated word processors, such as Microsoft Word.</li><li><a href="https://commonmark.org/">CommonMark</a> - "A strongly defined, highly compatible specification of Markdown"</li></ul><h3>Contributing</h3><p>All contributions are welcome!</p><p>Please let me know if you find typos, grammar or spelling mistakes, or have a suggestion for improving the cheatsheet (since GitHub does not send notifications for gists, it might be better to contact me on twitter, at <a href="https://twitter.com/jonschlinkert">@jonschlinkert</a>).</p><p>Thanks for reading!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://roger.ml/posts/first-post</guid><title>“Hello, New Blog!”</title><description>This marks the first post hosted here. Which means I'm finally migrating off of Medium. Hooray! 🎉</description><link>https://roger.ml/posts/first-post</link><pubDate>Sun, 28 Feb 2021 12:00:00 -0300</pubDate><content:encoded><![CDATA[<h1>“Hello, New Blog!”</h1><img src="https://roger.ml/images/posts/first-post/my-first-post-swiftui.png" alt="My First Post"/><p>This marks the first post hosted here. Which means I'm finally migrating off of Medium. Hooray! 🎉</p><p>“But why?” - you might ask. And it's a fair question. After all, why would anyone leave a free platform that makes publishing content so easy?</p><h2>Overall Look'n'Feel</h2><p>Medium is a writing platform made for everyone. It democratized access to a blogging platform. However, I write mostly about programming topics, and Medium's UI isn't tailored for programming posts. Here I have full control over how the website will look like, how syntax highlighting will display different programming languages, I can format images any way I want, change the website theme, etc - I get to choose how everything looks. And I can change it at any point in time.</p><p>On Medium, simply posting a multiline code snippet is cumbersome, since it has to first be uploaded to a GitHub gist, embeded content displays awfully, and there's not even support to markdown. 😪</p><h2>Content Ownership</h2><p>Here I own the data. No, really. Medium makes it easy for you import content into it, but exporting is painful. <a href="https://medium.com/@macropus/export-your-medium-posts-to-markdown-b5ccc8cb0050">There are some workarounds</a>, but I'd much rather own and store the content myself. Not to mention that by storing it on a git-based system, I get free versioning, and I can even enable a code reviewing process if I like, which would alone be a huge advantage over pretty much any other blogging platform.</p><h2>Other Miscellaneous Reasons</h2><p>Yann Girard <a href="https://yanngirard.typepad.com/yanns_blog/2015/10/why-you-shouldnt-blog-on-medium-.html">mentions</a> many other reasons to dislike Medium. Brand dilution, low click-throughs, extremely high competition, to mention a few.</p><p>There's also the fact that Medium's recommendation algorithm strongly favors paid articles as opposed to free ones, and this completely defeats the purpose of what I look forward to, when blogging. I want the information to flow freely and dissiminate within the community of developers, travelers, or whatever target audience I'm writing to. The goal was never earn money by putting the information behind a pay wall.</p><p>Also, I don't know much about SEO yet, but I can imagine that having full control over SEO metadata might also greatly improve your blog's appearance on search engines. I'll definitely learn more about this in the upcoming months.</p><h1>So, What Now?</h1><p>In the end, given my purposes as a writer, the type of content I write, aesthetics and other minor reasons, a generic blogging platform doesn't fit my needs anymore.</p><p>I might migrate some of the articles from Medium, over to this website. At least the ones I still like, and that are still relevant.</p><p>I might delete them from Medium after migrating them. Maintaining a copy of the content in two places is too costly, time-wise. One way or another one of them gets auto of sync and starts causing issues.</p><p>You can follow me on Twitter (<a href="https://twitter.com/rogerluan_">@rogerluan_</a>) to be notified when a new post comes out here. Or you can subscribe to this website's RSS feed, if you're not on Twitter!</p><p>I'm looking forward to using this new <em>medium</em> (pun intended) to publish my content. 🥳</p>]]></content:encoded></item></channel></rss>

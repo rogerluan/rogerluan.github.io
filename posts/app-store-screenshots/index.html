@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="og:site_name" content="Roger Oba"/>
+        <link rel="canonical" href="https://roger.ml/posts/app-store-screenshots"/>
+        <meta name="twitter:url" content="https://roger.ml/posts/app-store-screenshots"/>
+        <meta name="og:url" content="https://roger.ml/posts/app-store-screenshots"/>
+        <title>How to update App Store screenshots without uploading a new build | Roger Oba</title>
+        <meta name="twitter:title" content="How to update App Store screenshots without uploading a new build | Roger Oba"/>
+        <meta name="og:title" content="How to update App Store screenshots without uploading a new build | Roger Oba"/>
+        <meta name="description" content="Updating the screenshots of your app without uploading a new build to the App Store has been impossible. Until now!"/>
+        <meta name="twitter:description" content="Updating the screenshots of your app without uploading a new build to the App Store has been impossible. Until now!"/>
+        <meta name="og:description" content="Updating the screenshots of your app without uploading a new build to the App Store has been impossible. Until now!"/>
+        <meta og:type="   "/>
+        <meta name="twitter:card" content="summary_large_image"/>
+        <link rel="stylesheet" href="/styles.css" type="text/css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/>
+        <link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Roger Oba"/>
+        <meta name="twitter:image" content="https://roger.ml/images/posts/app-store-screenshots/app-collection-banner.png"/>
+        <meta name="og:image" content="https://roger.ml/images/posts/app-store-screenshots/app-collection-banner.png"/>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HKQ5FZY2H4"></script>
+        <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-HKQ5FZY2H4');</script>
+    </head>
+    <body class="item-page">
+        <header>
+            <div class="wrapper">
+                <a href="/">
+                    <img class="logo" src="/images/banner.png" alt="roger.ml"/>
+                </a>
+                <nav>
+                    <ul>
+                        <li>
+                            <a class="selected" href="/posts">All Posts</a>
+                        </li>
+                        <li>
+                            <a href="/about">About</a>
+                        </li>
+                        <li>
+                            <a href="/contact">Contact</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div class="wrapper">
+            <article>
+                <div class="markdown-body"><h1>How to update App Store screenshots without uploading a new build</h1><img src="/images/posts/app-store-screenshots/app-collection-banner.png" alt="Banner"/><p><em>Credit: <a href="https://www.apple.com/au/app-store/developing-for-the-app-store">Apple</a></em></p><p>Since 2008, when the App Store debutted, updating the screenshots that showcase your app in the App Store without submitting a new app binary wasn't possible. That has changed in early 2022 and might save you a good chunk of time.</p><p>In 2021 WWDC, Apple announced that they'd launch "Product Page Optimization" changes to help developers and marketers <em>"compare different app icons, screenshots, and app previews on your App Store product page"</em>. Long story short, this is an "A/B testing" or "experiment" functionality for App Store metadata - something that has been available in the Google Play Store for several years now.</p><p>The catch here is that you can take advantage of that system to update your App Store screenshots and app previews without requiring you to go through the tedious and time consuming process of compiling a new build, submitting it to App Store Connect, waiting for it to be processed, and submit it for review all over again.</p><h1>Cut to the chase!</h1><p>Alright, so the short version is: you'll create an App Store experiment, then immediately apply it to your live page 💥</p><ol><li>Open the Product Page Optimization menu and create a new test</li></ol><img src="/images/posts/app-store-screenshots/product-page-optimization.png" alt="App Store Connect Product Page Optimization"/><img src="/images/posts/app-store-screenshots/create-product-page-test.png" alt="App Store Connect Create New Test"/><ol start="2"><li>Update your metadata</li></ol><p>Currently you can only update screenshots and app preview.</p><img src="/images/posts/app-store-screenshots/update-test.png" alt="App Store Connect Update Test"/><ol start="3"><li>Start the test</li></ol><p>Once you're done with your changes, you gotta start the test by hitting "Start Test" on the top right of the page. Once it's active you'll see this:</p><img src="/images/posts/app-store-screenshots/active-test.png" alt="App Store Connect Active Test"/><ol start="4"><li>Apply Treatment to original product page</li></ol><p>To make the changes live, you gotta hit the "Apply Treatment to Original Product Page" button.</p><img src="/images/posts/app-store-screenshots/apply-treatment.png" alt="App Store Connect Apply Treatment Confirmation Screen"/><ol start="5"><li>That's it!</li></ol><img src="/images/posts/app-store-screenshots/success-page.png" alt="App Store Connect Success Message"/><h1>Conclusion</h1><p>It's a pretty straightforward process to update your screenshots without going through the process of uploading a new binary, nor sending your changes for Apple to review them. These changes happen instantly (on your side) and may take up to 24 hours to be applied and visible throughout the many App Stores around the world (as usual).</p><p>I hope Apple allows us for customize more metadata over time. Screenshots and app previews are great, but it's often super useful to be able to update all the metadata without requiring a new app update: keywords, description, copyright notice, etc.</p><p>If you liked this article, if you spotted mistakes in it, or if you just want to say hi, ping me <a href="https://twitter.com/rogerluan_">@rogerluan_</a> 🤗</p></div>
+                <span>Tagged with: </span>
+                <ul class="tag-list">
+                    <li>
+                        <a href="/tags/app-store-connect">app store connect</a>
+                    </li>
+                </ul>
+            </article>
+        </div>
+        <footer>
+            <p>
+                <a href="https://twitter.com/rogerluan_">Twitter</a> | 
+                <a href="/feed.rss">RSS</a> | 
+                <a href="https://github.com/rogerluan">GitHub</a>
+            </p>
+            <p>Website Built in Swift using 
+                <a href="https://github.com/johnsundell/publish">Publish</a>
+            </p>
+            <p>Copyright © Roger Oba 2013-2022</p>
+        </footer>
+    </body>
+</html>

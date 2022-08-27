@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="og:site_name" content="Roger Oba"/>
+        <link rel="canonical" href="https://roger.ml/posts/test-css"/>
+        <meta name="twitter:url" content="https://roger.ml/posts/test-css"/>
+        <meta name="og:url" content="https://roger.ml/posts/test-css"/>
+        <title>Markdown cheatsheet | Roger Oba</title>
+        <meta name="twitter:title" content="Markdown cheatsheet | Roger Oba"/>
+        <meta name="og:title" content="Markdown cheatsheet | Roger Oba"/>
+        <meta name="description" content="Over the course of years I realized I could help the tech community by writing about topics that were too hard to find information about."/>
+        <meta name="twitter:description" content="Over the course of years I realized I could help the tech community by writing about topics that were too hard to find information about."/>
+        <meta name="og:description" content="Over the course of years I realized I could help the tech community by writing about topics that were too hard to find information about."/>
+        <meta og:type="   "/>
+        <meta name="twitter:card" content="summary"/>
+        <link rel="stylesheet" href="/styles.css" type="text/css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/>
+        <link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Roger Oba"/>
+        <meta name="twitter:image" content="https://roger.ml/images/roger.ml.png"/>
+        <meta name="og:image" content="https://roger.ml/images/roger.ml.png"/>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HKQ5FZY2H4"></script>
+        <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-HKQ5FZY2H4');</script>
+    </head>
+    <body class="item-page">
+        <header>
+            <div class="wrapper">
+                <a href="/">
+                    <img class="logo" src="/images/banner.png" alt="roger.ml"/>
+                </a>
+                <nav>
+                    <ul>
+                        <li>
+                            <a class="selected" href="/posts">All Posts</a>
+                        </li>
+                        <li>
+                            <a href="/about">About</a>
+                        </li>
+                        <li>
+                            <a href="/contact">Contact</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div class="wrapper">
+            <article>
+                <div class="markdown-body"><h1>Markdown cheatsheet</h1><p><em>(Also see <a href="">remarkable</a>, the markdown parser created by the author of this cheatsheet)</em></p><h2>Table of contents</h2><ul><li><a href="#standard-features">Standard features</a><ul><li><a href="#headings">Headings</a></li><li><a href="#paragraphs">Paragraphs</a></li><li><a href="#breaks">Breaks</a></li><li><a href="#horizontal-rule">Horizontal Rule</a></li><li><a href="#emphasis">Emphasis</a><ul><li><a href="#bold">Bold</a></li><li><a href="#italics">Italics</a></li></ul></li><li><a href="#blockquotes">Blockquotes</a></li><li><a href="#lists">Lists</a><ul><li><a href="#unordered">Unordered</a></li><li><a href="#ordered">Ordered</a></li><li><a href="#time-saving-tip">Time-saving Tip</a></li></ul></li><li><a href="#code">Code</a><ul><li><a href="#inline-code">Inline code</a></li><li><a href="#fenced-code-block">"Fenced" code block</a></li><li><a href="#indented-code">Indented code</a></li><li><a href="#syntax-highlighting">Syntax highlighting</a></li></ul></li><li><a href="#links">Links</a><ul><li><a href="#autolinks">Autolinks</a></li><li><a href="#inline-links">Inline links</a></li><li><a href="#link-titles">Link titles</a></li><li><a href="#named-anchors">Named Anchors</a></li></ul></li><li><a href="#images">Images</a></li><li><a href="#raw-html">Raw HTML</a></li><li><a href="#escaping-with-backslashes">Escaping with backslashes</a></li></ul></li><li><a href="#non-standard-features">Non-standard features</a><ul><li><a href="#strikethrough">Strikethrough</a></li><li><a href="#todo-list">Todo List</a></li><li><a href="#tables">Tables</a><ul><li><a href="#aligning-cells">Aligning cells</a></li></ul></li><li><a href="#footnotes">Footnotes</a><ul><li><a href="#inline-footnotes">Inline footnotes</a></li></ul></li><li><a href="#additional-information">Additional Information</a><ul><li><a href="#what-is-markdown">What is markdown?</a></li><li><a href="#other-resources">Other Resources</a></li><li><a href="#contributing">Contributing</a></li></ul></li></ul></li></ul><h1>Standard features</h1><pre><code class="language-swift">import Foundation
+import Publish
+import Plot
+import SplashPublishPlugin
+import Ink
+
+// This type acts as the configuration for your website.
+struct RogerMl: Website {
+    enum SectionID: String, WebsiteSectionID {
+        // Add the sections that you want your website to contain here:
+        case posts
+        case about = "About"
+        case contact = "Contact"
+    }
+
+    struct ItemMetadata: WebsiteItemMetadata {
+        // Add any site-specific metadata that you want to use here.
+    }
+
+    // Update these properties to configure your website:
+    var url = URL(string: "https://roger.ml")!
+    var name = "Roger Oba"
+    var description = ""
+    var language: Language { .english }
+    var imagePath: Path? { nil }
+    var favicon: Favicon? { Favicon(path: "favicon.svg", type: "image/svg+xml") }
+}
+
+// This will generate your website using the built-in Foundation theme:
+try RogerMl().publish(
+    withTheme: .roger,
+    indentation: .spaces(4),
+//    at: Path.,
+    deployedUsing: .gitHub("rogerluan/rogerluan.github.io"),
+    additionalSteps: [
+        .step(named: "Create 'about' Page") { context in
+            let about = try context.file(at: "/Content/about/index.md")
+            let page = try context.makeMarkdownContentFactory().makePage(fromFile: about, at: "/about")
+            context.addPage(page)
+        },
+        .step(named: "Create 'contact' Page") { context in
+            let about = try context.file(at: "/Content/contact/index.md")
+            let page = try context.makeMarkdownContentFactory().makePage(fromFile: about, at: "/contact")
+            context.addPage(page)
+        },
+    ],
+    plugins: [ .splash(withClassPrefix: "") ]
+)
+</code></pre><p>The following markdown features are defined by the <a href="">CommonMark</a> standard, and are generally supported by all markdown parsers and editors.</p><h2>Headings</h2><p>Headings from <code>h1</code> through <code>h6</code> are constructed with a <code>#</code> for each level:</p><pre><code># h1 Heading
+## h2 Heading
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+</code></pre><p>Renders to this HTML:</p><pre><code class="language-html">&lt;h1&gt;h1 Heading&lt;/h1&gt;
+&lt;h2&gt;h2 Heading&lt;/h2&gt;
+&lt;h3&gt;h3 Heading&lt;/h3&gt;
+&lt;h4&gt;h4 Heading&lt;/h4&gt;
+&lt;h5&gt;h5 Heading&lt;/h5&gt;
+&lt;h6&gt;h6 Heading&lt;/h6&gt;
+</code></pre><p>Which looks like this in the browser:</p><h1>h1 Heading</h1><h2>h2 Heading</h2><h3>h3 Heading</h3><h4>h4 Heading</h4><h5>h5 Heading</h5><h6>h6 Heading</h6><p><strong>A note about "Setext" Headings</strong></p><p>Note that this document only describes <a href="https://spec.commonmark.org/0.28/#atx-headings">ATX headings</a>, as it is the preferred syntax for writing headings. However, the CommonMark specification also describes <a href="https://spec.commonmark.org/0.28/#setext-headings">Setext headings</a>, a heading format that is denoted by a line of dashes or equal signes following the heading. It's recommended by the author of this guide that you use only ATX headings, as they are easier to write and read in text editors, and are less likeley to conflict with other syntaxes and demarcations from language extensions.</p><h2>Paragraphs</h2><p>Body copy written as normal plain-text will be wrapped with <code>&lt;p&gt;&lt;/p&gt;</code> tags in the rendered HTML.</p><p>So this:</p><pre><code>Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.
+</code></pre><p>Renders to this HTML:</p><pre><code class="language-html">&lt;p&gt;Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.&lt;/p&gt;
+</code></pre><h2>Breaks</h2><p>You can use multiple consecutive newline characters (<code>\n</code>) to create extra spacing between sections in a markdown document. However, if you need to ensure that extra newlines are not collapsed, you can use as many HTML <code>&lt;br&gt;</code> elements as you want.</p><h2>Horizontal Rule</h2><p>The HTML <code>&lt;hr&gt;</code> element is for creating a "thematic break" between paragraph-level elements. In markdown, you can use of the following for this purpose:</p><ul><li><code>___</code>: three consecutive underscores</li><li><code>---</code>: three consecutive dashes</li><li><code>***</code>: three consecutive asterisks</li></ul><p>Renders to:</p><p>___</p><hr><hr><h2>Emphasis</h2><h3>Bold</h3><p>For emphasizing a snippet of text with a heavier font-weight.</p><p>The following snippet of text is <strong>rendered as bold text</strong>.</p><pre><code>**rendered as bold text**
+</code></pre><p>renders to:</p><p><strong>rendered as bold text</strong></p><p>and this HTML</p><pre><code class="language-html">&lt;strong&gt;rendered as bold text&lt;/strong&gt;
+</code></pre><h3>Italics</h3><p>For emphasizing a snippet of text with italics.</p><p>The following snippet of text is <em>rendered as italicized text</em>.</p><pre><code>_rendered as italicized text_
+</code></pre><p>renders to:</p><p><em>rendered as italicized text</em></p><p>and this HTML:</p><pre><code class="language-html">&lt;em&gt;rendered as italicized text&lt;/em&gt;
+</code></pre><h2>Blockquotes</h2><p>Used for defining a section of quoting text from another source, within your document.</p><p>To create a blockquote, use <code>&gt;</code> before any text you want to quote.</p><pre><code>&gt; Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante
+</code></pre><p>Renders to:</p><blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p></blockquote><p>And the generated HTML from a markdown parser might look something like this:</p><pre><code class="language-html">&lt;blockquote&gt;
+  &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.&lt;/p&gt;
+&lt;/blockquote&gt;
+</code></pre><p>Blockquotes can also be nested:</p><pre><code>&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+&gt;&gt; Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
+odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+&gt;&gt;&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
+Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+</code></pre><p>Renders to:</p><blockquote><p>Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.&gt; Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctorodio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.&gt;&gt; Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.</p></blockquote><h2>Lists</h2><h3>Unordered Lists</h3><p>A list of items in which the order of the items does not explicitly matter.</p><p>You may use any of the following symbols to denote bullets for each list item:</p><pre><code>* valid bullet
+- valid bullet
++ valid bullet
+</code></pre><p>For example</p><pre><code>+ Lorem ipsum dolor sit amet
++ Consectetur adipiscing elit
++ Integer molestie lorem at massa
++ Facilisis in pretium nisl aliquet
++ Nulla volutpat aliquam velit
+  - Phasellus iaculis neque
+  - Purus sodales ultricies
+  - Vestibulum laoreet porttitor sem
+  - Ac tristique libero volutpat at
++ Faucibus porta lacus fringilla vel
++ Aenean sit amet erat nunc
++ Eget porttitor lorem
+</code></pre><p>Renders to:</p><ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit<ul><li>Phasellus iaculis neque</li><li>Purus sodales ultricies</li><li>Vestibulum laoreet porttitor sem</li><li>Ac tristique libero volutpat at</li></ul></li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ul><p>And this HTML</p><pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;Lorem ipsum dolor sit amet&lt;/li&gt;
+  &lt;li&gt;Consectetur adipiscing elit&lt;/li&gt;
+  &lt;li&gt;Integer molestie lorem at massa&lt;/li&gt;
+  &lt;li&gt;Facilisis in pretium nisl aliquet&lt;/li&gt;
+  &lt;li&gt;Nulla volutpat aliquam velit
+    &lt;ul&gt;
+      &lt;li&gt;Phasellus iaculis neque&lt;/li&gt;
+      &lt;li&gt;Purus sodales ultricies&lt;/li&gt;
+      &lt;li&gt;Vestibulum laoreet porttitor sem&lt;/li&gt;
+      &lt;li&gt;Ac tristique libero volutpat at&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Faucibus porta lacus fringilla vel&lt;/li&gt;
+  &lt;li&gt;Aenean sit amet erat nunc&lt;/li&gt;
+  &lt;li&gt;Eget porttitor lorem&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre><h3>Ordered Lists</h3><p>A list of items in which the order of items does explicitly matter.</p><pre><code>1. Lorem ipsum dolor sit amet
+2. Consectetur adipiscing elit
+3. Integer molestie lorem at massa
+4. Facilisis in pretium nisl aliquet
+5. Nulla volutpat aliquam velit
+6. Faucibus porta lacus fringilla vel
+7. Aenean sit amet erat nunc
+8. Eget porttitor lorem
+</code></pre><p>Renders to:</p><ol><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit</li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ol><p>And this HTML:</p><pre><code class="language-html">&lt;ol&gt;
+  &lt;li&gt;Lorem ipsum dolor sit amet&lt;/li&gt;
+  &lt;li&gt;Consectetur adipiscing elit&lt;/li&gt;
+  &lt;li&gt;Integer molestie lorem at massa&lt;/li&gt;
+  &lt;li&gt;Facilisis in pretium nisl aliquet&lt;/li&gt;
+  &lt;li&gt;Nulla volutpat aliquam velit&lt;/li&gt;
+  &lt;li&gt;Faucibus porta lacus fringilla vel&lt;/li&gt;
+  &lt;li&gt;Aenean sit amet erat nunc&lt;/li&gt;
+  &lt;li&gt;Eget porttitor lorem&lt;/li&gt;
+&lt;/ol&gt;
+</code></pre><h3>Time-saving Tip!</h3><p>Sometimes lists change, and when they do it's a pain to re-order all of the numbers. Markdown solves this problem by allowing you to simply use <code>1.</code> before each item in the list.</p><p>For example:</p><pre><code>1. Lorem ipsum dolor sit amet
+1. Consectetur adipiscing elit
+1. Integer molestie lorem at massa
+1. Facilisis in pretium nisl aliquet
+1. Nulla volutpat aliquam velit
+1. Faucibus porta lacus fringilla vel
+1. Aenean sit amet erat nunc
+1. Eget porttitor lorem
+</code></pre><p>Automatically re-numbers the items and renders to:</p><ol><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit</li><li>Faucibus porta lacus fringilla vel</li><li>Aenean sit amet erat nunc</li><li>Eget porttitor lorem</li></ol><h2>Code</h2><h3>Inline code</h3><p>Wrap inline snippets of code with a single backtick: <code>`</code>.</p><p>For example, to show <code>&lt;div&gt;&lt;/div&gt;</code> inline with other text, just wrap it in backticks.</p><pre><code class="language-html">For example, to show `&lt;div&gt;&lt;/div&gt;` inline with other text, just wrap it in backticks.
+</code></pre><h3>"Fenced" code block</h3><p>Three consecutive backticks, referred to as "code fences", are used to denote multiple lines of code: <code>```</code>.</p><p>For example, this:</p><pre>
+```html
+Example text here...
+```
+</pre><p>Renders to something like this in HTML:</p><pre><code class="language-html">&lt;pre&gt;
+  &lt;p&gt;Example text here...&lt;/p&gt;
+&lt;/pre&gt;
+</code></pre><p>And appears like this when viewed in a browser:</p><pre><code>Example text here...
+</code></pre><h3>Indented code</h3><p>You may also indent several lines of code by at least four spaces, but this is not recommended as it is harder to read, harder to maintain, and doesn't support syntax highlighting.</p><p>Example:</p><pre><code>    // Some comments
+    line 1 of code
+    line 2 of code
+    line 3 of code
+</code></pre><p>// Some comments line 1 of code line 2 of code line 3 of code</p><h3>Syntax highlighting</h3><p>Various markdown parsers, such as <a href="https://github.com/jonschlinkert/remarkable">remarkable</a>, support syntax highlighting with fenced code blocks. To activate the correct styling for the language inside the code block, simply add the file extension of the language you want to use directly after the first code "fence": <code>```js</code>, and syntax highlighting will automatically be applied in the rendered HTML (if supported by the parser). For example, to apply syntax highlighting to JavaScript code:</p><pre>
+```js
+grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+});
+```
+</pre><p>Which renders to:</p><pre><code class="language-js">grunt.initConfig({
+  assemble: {
+    options: {
+      assets: 'docs/assets',
+      data: 'src/data/*.{json,yml}',
+      helpers: 'src/custom-helpers.js',
+      partials: ['src/partials/**/*.{hbs,md}']
+    },
+    pages: {
+      options: {
+        layout: 'default.hbs'
+      },
+      files: {
+        './': ['src/templates/pages/index.hbs']
+      }
+    }
+  }
+});
+</code></pre><p>And this complicated HTML is an example of what might be generated by the markdown parser, when syntax highlighting is applied by a library like <a href="https://highlightjs.org/">highlight.js</a>:</p><pre><code class="language-xml">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;grunt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;initConfig&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+  &lt;span class="nx"&gt;assemble&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;options&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="nx"&gt;assets&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'docs/assets'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'src/data/*.{json,yml}'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;helpers&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'src/custom-helpers.js'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+      &lt;span class="nx"&gt;partials&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'src/partials/**/*.{hbs,md}'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="nx"&gt;pages&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+      &lt;span class="nx"&gt;options&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;layout&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'default.hbs'&lt;/span&gt;
+      &lt;span class="p"&gt;},&lt;/span&gt;
+      &lt;span class="nx"&gt;files&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s1"&gt;'./'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'src/templates/pages/index.hbs'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+      &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+</code></pre><h2>Links</h2><h3>Autolinks</h3><p>Not supported by roger.ml</p><h3>Inline links</h3><pre><code>[Assemble](http://assemble.io)
+</code></pre><p>Renders to (hover over the link, there is no tooltip):</p><p><a href="http://assemble.io">Assemble</a></p><p>HTML:</p><pre><code class="language-html">&lt;a href="http://assemble.io"&gt;Assemble&lt;/a&gt;
+</code></pre><h3>Link titles</h3><pre><code>[Assemble](https://github.com/assemble/ "Visit Assemble!")
+</code></pre><p>Renders to (hover over the link, there should be a tooltip):</p><p><a href="https://github.com/assemble/ "Visit Assemble!"">Assemble</a></p><p>HTML:</p><pre><code class="language-html">&lt;a href="https://github.com/assemble/" title="Visit Assemble!"&gt;Assemble&lt;/a&gt;
+</code></pre><h3>Named Anchors</h3><p>Named anchors enable you to jump to the specified anchor point on the same page.</p><p>For example, the following "chapter" links:</p><pre><code># Table of Contents
+  * [Chapter 1](#chapter-1)
+  * [Chapter 2](#chapter-2)
+  * [Chapter 3](#chapter-3)
+</code></pre><p>...will jump to these sections:</p><pre><code>## Chapter 1 &lt;a name="chapter-1"&gt;&lt;/a&gt;
+Content for chapter one.
+
+## Chapter 2 &lt;a name="chapter-2"&gt;&lt;/a&gt;
+Content for chapter one.
+
+## Chapter 3 &lt;a name="chapter-3"&gt;&lt;/a&gt;
+Content for chapter one.
+</code></pre><p><strong>Anchor placement</strong></p><p>Note that placement of achors is arbitrary, you can put them anywhere you want, not just in headings. This makes adding cross-references easy when writing markdown.</p><h2>Images</h2><p>Images have a similar syntax to links but include a preceding exclamation point.</p><pre><code>![Minion](http://octodex.github.com/images/minion.png)
+</code></pre><img src="http://octodex.github.com/images/minion.png" alt="Minion"/><p>or</p><pre><code>![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+</code></pre><img src="http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat"" alt="Alt text"/><p>Like links, Images also have a footnote style syntax</p><pre><code>![Alt text][id]
+</code></pre><img src="http://octodex.github.com/images/dojocat.jpg  "The Dojocat"" alt="Alt text"/><p>With a reference later in the document defining the URL location:</p><pre><code>[id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+</code></pre><h2>Raw HTML</h2><p>Any text between <code>&lt;</code> and <code>&gt;</code> that looks like an HTML tag will be parsed as a raw HTML tag and rendered to HTML without escaping.</p><p><em>(Note that markdown parsers do not attempt to validate your HTML).</em></p><p>Example:</p><pre><code>**Visit &lt;a href="https://github.com"&gt;Jon Schlinkert's GitHub Profile&lt;/a&gt;.**
+</code></pre><p>Renders to:</p><p><strong>Visit <a href="https://github.com">Jon Schlinkert's GitHub Profile</a>.</strong></p><h2>Escaping with backslashes</h2><p>Any ASCII punctuation character may be escaped using a single backslash.</p><p>Example:</p><pre><code>\*this is not italic*
+</code></pre><p>Renders to:</p><p>*this is not italic*</p><h1>Non-standard features</h1><p>The following markdown features are not defined by the <a href="">CommonMark</a> specification, but they are commonly supported by markdown parsers and editors, as well as sites like GitHub and GitLab.</p><h2>Strikethrough</h2><p>In GitHub Flavored Markdown (GFM) you can do strickthroughs.</p><pre><code>~~Strike through this text.~~
+</code></pre><p>Which renders to:</p><p><s>Strike through this text.</s></p><h3>Todo List</h3><pre><code>- [ ] Lorem ipsum dolor sit amet
+- [ ] Consectetur adipiscing elit
+- [x] Integer molestie lorem at massa
+</code></pre><p>Renders to:</p><ul><li>[ ] Lorem ipsum dolor sit amet</li><li>[ ] Consectetur adipiscing elit</li><li>[x] Integer molestie lorem at massa</li></ul><p><strong>Links in todo lists</strong></p><pre><code>- [ ] [foo](#bar)
+- [ ] [baz](#qux)
+- [x] [fez](#faz)
+</code></pre><p>Renders to:</p><ul><li>[ ] <a href="#bar">foo</a></li><li>[ ] <a href="#qux">baz</a></li><li>[x] <a href="#faz">fez</a></li></ul><h2>Tables</h2><p>Tables are created by adding pipes as dividers between each cell, and by adding a line of dashes (also separated by bars) beneath the header <em>(this line of dashes is required)</em>.</p><ul><li>pipes do not need to be vertically aligned.</li><li>pipes on the left and right sides of the table are sometimes optional</li><li>three or more dashes must be used for each cell in the <em>separator</em> row (between the table header and body)</li><li>the left and right pipes are optional with some markdown parsers</li></ul><p>Example:</p><pre><code>| Option | Description |
+| --- | --- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><p>Renders to:</p><table><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td>data</td><td>path to data files to supply the data that will be passed into templates.</td></tr><tr><td>engine</td><td>engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td>ext</td><td>extension to be used for dest files.</td></tr></tbody></table><p>And this HTML:</p><pre><code class="language-html">&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Option&lt;/th&gt;
+    &lt;th&gt;Description&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;data&lt;/td&gt;
+    &lt;td&gt;path to data files to supply the data that will be passed into templates.&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;engine&lt;/td&gt;
+    &lt;td&gt;engine to be used for processing templates. Handlebars is the default.&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;ext&lt;/td&gt;
+    &lt;td&gt;extension to be used for dest files.&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre><h3>Aligning cells</h3><p><strong>Center text in a column</strong></p><p>To center the text in a column, add a colon to the middle of the dashes in the row beneath the header.</p><pre><code>| Option | Description |
+| :--: | :--: |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><table><thead><tr><th align="center">Option</th><th align="center">Description</th></tr></thead><tbody><tr><td align="center">data</td><td align="center">path to data files to supply the data that will be passed into templates.</td></tr><tr><td align="center">engine</td><td align="center">engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td align="center">ext</td><td align="center">extension to be used for dest files.</td></tr></tbody></table><p><strong>Right-align the text in a column</strong></p><p>To right-align the text in a column, add a colon to the middle of the dashes in the row beneath the header.</p><pre><code>| Option | Description |
+| --: | --:|
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+</code></pre><p>Renders to:</p><table><thead><tr><th align="right">Option</th><th align="right">Description</th></tr></thead><tbody><tr><td align="right">data</td><td align="right">path to data files to supply the data that will be passed into templates.</td></tr><tr><td align="right">engine</td><td align="right">engine to be used for processing templates. Handlebars is the default.</td></tr><tr><td align="right">ext</td><td align="right">extension to be used for dest files.</td></tr></tbody></table><h2>Footnotes</h2><blockquote><p>Markdown footnotes are not officially suppored by the <a href="">CommonMark</a> specification. However, the feature is supported by <a href="">remarkable</a> and other markdown parsers, and it's very useful when available.</p></blockquote><p>Markdown footnotes are denoted by an opening square bracket, followed by a caret, followed by a number and a closing square bracket: <code>[^1]</code>.</p><pre><code>This is some text[^1] with a footnote reference link.
+</code></pre><p>The accompanying text for the footnote can be added elsewhere in the document using the following syntax:</p><pre><code>[^1]: "This is a footnote"
+</code></pre><p>When rendered to HTML, footnotes are "stacked" by the markdown parser at the bottom of the file, in the order in which the footnotes were defined.</p><h3>Inline footnotes</h3><p>Some markdown parsers like <a href="https://github.com/jonschlinkert/remarkable">Remarkable</a> also support inline footnotes. Inline footnotes are written using the following syntax: <code>[^2 "This is an inline footnote"]</code>.</p><h2>Additional Information</h2><h3>What is markdown?</h3><blockquote><p>Markdown is "a plain text format for writing structured documents, based on formatting conventions from email and usenet" -- <a href="">CommonMark</a></p></blockquote><p>Sites like GitHub and Stackoverflow have popularized the use markdown as a plain-text alternative to traditional text editors, for writing things like documentation and comments.</p><h3>Other Resources</h3><ul><li><a href="https://ben.balter.com/2012/10/19/we-ve-been-trained-to-make-paper/">We've been trained to make paper</a> - A great blog post about why markdown frees us from the shackles of proprietary formats imposed by bloated word processors, such as Microsoft Word.</li><li><a href="https://commonmark.org/">CommonMark</a> - "A strongly defined, highly compatible specification of Markdown"</li></ul><h3>Contributing</h3><p>All contributions are welcome!</p><p>Please let me know if you find typos, grammar or spelling mistakes, or have a suggestion for improving the cheatsheet (since GitHub does not send notifications for gists, it might be better to contact me on twitter, at <a href="https://twitter.com/jonschlinkert">@jonschlinkert</a>).</p><p>Thanks for reading!</p></div>
+                <span>Tagged with: </span>
+                <ul class="tag-list"></ul>
+            </article>
+        </div>
+        <footer>
+            <p>
+                <a href="https://twitter.com/rogerluan_">Twitter</a> | 
+                <a href="/feed.rss">RSS</a> | 
+                <a href="https://github.com/rogerluan">GitHub</a>
+            </p>
+            <p>Website Built in Swift using 
+                <a href="https://github.com/johnsundell/publish">Publish</a>
+            </p>
+            <p>Copyright © Roger Oba 2013-2022</p>
+        </footer>
+    </body>
+</html>

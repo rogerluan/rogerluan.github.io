@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="og:site_name" content="Roger Oba"/>
+        <link rel="canonical" href="https://roger.ml/posts/testing-dependencies-efficiently"/>
+        <meta name="twitter:url" content="https://roger.ml/posts/testing-dependencies-efficiently"/>
+        <meta name="og:url" content="https://roger.ml/posts/testing-dependencies-efficiently"/>
+        <title>Testing multiple local Swift dependencies efficiently | Roger Oba</title>
+        <meta name="twitter:title" content="Testing multiple local Swift dependencies efficiently | Roger Oba"/>
+        <meta name="og:title" content="Testing multiple local Swift dependencies efficiently | Roger Oba"/>
+        <meta name="description" content="A modularized project with local dependencies such as Pods or Swift Packages will take too long to run. This is how you can speed them up by up to 90%!"/>
+        <meta name="twitter:description" content="A modularized project with local dependencies such as Pods or Swift Packages will take too long to run. This is how you can speed them up by up to 90%!"/>
+        <meta name="og:description" content="A modularized project with local dependencies such as Pods or Swift Packages will take too long to run. This is how you can speed them up by up to 90%!"/>
+        <meta og:type="   "/>
+        <meta name="twitter:card" content="summary_large_image"/>
+        <link rel="stylesheet" href="/styles.css" type="text/css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/>
+        <link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Roger Oba"/>
+        <meta name="twitter:image" content="https://roger.ml/images/posts/testing-dependencies-efficiently/creating-test-plan.png"/>
+        <meta name="og:image" content="https://roger.ml/images/posts/testing-dependencies-efficiently/creating-test-plan.png"/>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HKQ5FZY2H4"></script>
+        <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-HKQ5FZY2H4');</script>
+    </head>
+    <body class="item-page">
+        <header>
+            <div class="wrapper">
+                <a href="/">
+                    <img class="logo" src="/images/banner.png" alt="roger.ml"/>
+                </a>
+                <nav>
+                    <ul>
+                        <li>
+                            <a class="selected" href="/posts">All Posts</a>
+                        </li>
+                        <li>
+                            <a href="/about">About</a>
+                        </li>
+                        <li>
+                            <a href="/contact">Contact</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div class="wrapper">
+            <article>
+                <div class="markdown-body"><h1>Testing multiple local Swift dependencies efficiently</h1><p>For some time I struggled to reduce the test time when having multiple local dependencies, such as Development Pods or local Swift Packages. In a project with, say, 10 local dependencies, it can easily take 1 hour for your CI to run the unit tests for all of them, even if they only have 1 test inside each dependency.</p><p><em>For the purposes of this article, I considered a project with local Swift Package dependencies, and not other types of local dependencies (like static libraries and frameworks, or Development Pods).</em></p><h2>Why does this happen?</h2><p>What I figured is that xcodebuild's iOS Simulator startup time is too slow, and this causes the tests to take significantly longer. For each dependency you have, it will launch a new iOS Simulator process, and this process takes anywhere from 4 to 10 minutes, dependending on the machine it's run - even when launching a "headless" simulator.</p><h2>The solution: Test Plans</h2><p>Xcode Test Plans, which debuted in Xcode 11, serve the purpose of bundling tests together. You may want to create different sets of tests such as "Nightly", "UI", "Performance", etc, or you may simply bundle them up all together in the same Test Plan.</p><p>What I realized is that when using Test Plans, I obtained test runs up to 93% faster than by running individual Swift Package tests (<code>xcodebuild test &lt;swift package&gt;</code>) for <strong>iOS</strong> targets (more on this later).</p><h2>Show me the code!</h2><h3>Setting up your Test Plan</h3><p>Test Plans can be created via Xcode by creating a new file (cmd + N) and choosing "Test Plan" - yes, that simple. However, if you're using local Swift Packages, there's a trick here: your <code>.xcodeproj</code> or <code>.xcworkspace</code> must have the Swift Packages targets you want to test in its folder hierarchy otherwise they won't show up to be added in your Test Plan.</p><img src="/images/posts/testing-dependencies-efficiently/creating-test-plan.png" alt="Creating a Test Plan file"/><p>Once you have a Test Plan file, open it an click the <code>+</code> at the bottom left of the window and add all the targets you'd like to test.</p><p>Next, you may want to convert your one of your schemes of your main project (one that consumes those dependencies) to use Test Plans, or not. The only difference is that if you convert it, you can simply run <code>xcodebuild test -scheme &lt;your_scheme&gt;</code>, and if not, then you'll have to specify the name of your Test Plan explicitly, like <code>xcodebuild test -testPlan &lt;test_plan_name&gt;</code>.</p><p>To convert your scheme, open its Edit window on Xcode, and select <code>Convert to use Test Plans…</code>:</p><img src="/images/posts/testing-dependencies-efficiently/converting-test-plan.png" alt="Converting Scheme to use Test Plans"/><h3>Collecting code coverage</h3><p>Every setup is different, but I like using Rake tasks to run tests and collect code coverage. You may be using <em>fastlane</em>, in which case the APIs used will be different but the concepts remain the same. Also, I'll be using Code Climate in my example as it's the code coverage service I usually use for Swift projects.</p><p>First, we have to kick off the code coverage program that Code Climate distributes:</p><pre><code class="language-ruby"># Path to your Code Climate test reporter binary. You may want to fetch this from remote and do a checksum check before running it.
+test_reporter_bin = "path/to/your/cc-test-reporter"
+
+# Invoke the before-build function required by Code Climate, before collecting your code coverage
+sh("#{test_reporter_bin} before-build")
+</code></pre><p>Then we build the Test</p><pre><code class="language-ruby"># This becomes your new Derived Data path, stored in your project directory (you can gitignore this new folder)
+build_path = ".build"
+
+xcodebuild = []
+xcodebuild &lt;&lt; "arch -x86_64" # Only required if your project only runs on Rosetta 2
+xcodebuild &lt;&lt; "xcodebuild test"
+xcodebuild &lt;&lt; "-workspace your-project.xcworkspace"
+xcodebuild &lt;&lt; "-scheme 'Your Scheme'"
+xcodebuild &lt;&lt; "-destination 'platform=iOS Simulator,name=iPhone 14 Pro'"
+xcodebuild &lt;&lt; "-enableCodeCoverage=YES"
+xcodebuild &lt;&lt; "-derivedDataPath '#{build_path}/your-project'"
+xcodebuild &lt;&lt; "-clonedSourcePackagesDirPath '#{build_path}/SourcePackages'"
+xcodebuild &lt;&lt; "-quiet" # Optionally silents all xcodebuild output
+sh(xcodebuild.join(" "))
+</code></pre><p>Since xcodebuild will collect code coverage for all the targets that it goes through, including 3rd party, we have to filter out which targets we're interested. Let's declare an array for this purpose, that will be used later:</p><pre><code class="language-ruby"># You may want to collect this array programmatically somehow via scripting, for instance by crawling your directory hierarchy and reading which packages have test targets. For simplicity sake here we're just declaring them statically. 
+targets_to_keep = %w(
+  foo
+  bar
+  baz
+)
+</code></pre><p>Then we must interpret the <code>.xcresult</code> file produced by xcodebuild, and convert it to a format that Code Climate can interpret:</p><pre><code class="language-ruby"># This is a special path where your xcresult (test results) will be stored, within the Derived Data path specified by you earlier.
+most_recent_xcresult = Dir.glob("#{build_path}/your-project/Logs/Test/*.xcresult").max_by { |f| File.mtime(f) }
+
+# Specify where we're going to store the code coverage reports. Feel free to gitignore these directories or clean them up after collection
+xcodebuild_reports_directory = "coverage/xcodebuild_only_reports"
+xccov_report = File.absolute_path("#{xcodebuild_reports_directory}/your-project-xccov-report.json")
+output_file = File.expand_path("coverage/your-project-codeclimate.json")
+FileUtils.mkdir_p(xcodebuild_reports_directory)
+
+# Use `xccov` (a built-in tool from Xcode) to convert the .xcresult into a json file that uses the xccov format
+sh("xcrun xccov view --report --json '#{most_recent_xcresult}' &gt; #{xccov_report}")
+
+# Invoke this function that will clean up the code coverage report from targets we're not interested in collecting data for
+remove_all_targets_except(xccov_report, targets_to_keep)
+
+# Finally, format the json report (that uses the xccov format) into another json format specific to Code Climate 
+sh("#{test_reporter_bin} format-coverage '#{xccov_report}' --input-type xccov --output '#{output_file}'")
+</code></pre><p>Note that this snippet makes use of a function you must declare in your Rakefile called <code>remove_all_targets_except</code>. More about it here: <a href="https://gist.github.com/rogerluan/aaba6694a45ed5381e7e6b2259abd9f7">https://gist.github.com/rogerluan/aaba6694a45ed5381e7e6b2259abd9f7</a></p><p>Finally, submit the code coverage report to Code Climate:</p><pre><code class="language-ruby">sh("#{test_reporter_bin} upload-coverage --input '#{output_file}'")
+</code></pre><h2>Monorepo setup</h2><p>If you repository has multiple projects in it, this means you'll probably have more than 1 TestPlans (one for each project). If that's your case, this means you'll still have to merge the code coverage reports of your multiple projects before uploading them to Code Climate, by using the <code>sum-coverage --parts &lt;number_of_parts&gt;</code> function of their code coverage reporter tool. Again, this is only for Code Climate, so your mileage may vary.</p><h1>Conclusion</h1><p>With the setup I described in this article, I was able to reduce build times from ~61mins to ~4mins (when running locally), and from ~90mins to ~20mins (when running on Jenkins). That's an improvement of 77-93%!</p><p>One caveat with Swift Packages specifically is that, if your package is capable of running on macOS target (e.g. has no iOS dependency like UIKit), then your fastest alternative will certainly be using <code>swift test</code>, because it usually takes under 1 second to run whatever test suite you may have (of course, as long as they're not time-dependent). Yes, really.</p><p>I hope this setup also helps you and your team to reduce build times significantly. And if you know other tricks to reduce test time, drop a note on my twitter <a href="https://twitter.com/rogerluan_">@rogerluan_</a>!</p></div>
+                <span>Tagged with: </span>
+                <ul class="tag-list">
+                    <li>
+                        <a href="/tags/unit-test">unit test</a>
+                    </li>
+                    <li>
+                        <a href="/tags/spm">spm</a>
+                    </li>
+                    <li>
+                        <a href="/tags/performance">performance</a>
+                    </li>
+                    <li>
+                        <a href="/tags/ci">ci</a>
+                    </li>
+                </ul>
+            </article>
+        </div>
+        <footer>
+            <p>
+                <a href="https://twitter.com/rogerluan_">Twitter</a> | 
+                <a href="/feed.rss">RSS</a> | 
+                <a href="https://github.com/rogerluan">GitHub</a>
+            </p>
+            <p>Website Built in Swift using 
+                <a href="https://github.com/johnsundell/publish">Publish</a>
+            </p>
+            <p>Copyright © Roger Oba 2013-2022</p>
+        </footer>
+    </body>
+</html>
