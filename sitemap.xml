@@ -28,48 +28,42 @@
         <loc>https://roger.ml/posts/app-store-screenshots</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2022-04-30</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/posts/xcode-version</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2022-04-30</lastmod>
-    </url>
-    <url>
-        <loc>https://roger.ml/posts/test-css</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-        <lastmod>2021-03-16</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/posts/first-post</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-18</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/about</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2022-04-30</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/contact</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-18</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/about</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2022-04-30</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
     <url>
         <loc>https://roger.ml/contact</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-        <lastmod>2021-03-18</lastmod>
+        <lastmod>2022-08-27</lastmod>
     </url>
 </urlset>
